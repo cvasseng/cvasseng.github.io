@@ -38,6 +38,7 @@
             color:#EEE;
             text-align: center;
             font-family: 'Bad Script', sans-serif;
+            z-index:10;
         }
 
         .mask {
@@ -88,6 +89,16 @@ var tileset = me.Tileset(),
     doBeam = false,
     dungen = me.DungeonGen(map)
 ;
+
+function setMessage(msg) {
+   var e = document.getElementById('msg');
+
+   if (actor.isAlive()) {
+    e.innerHTML = msg;
+   } else {
+    e.innerHTML = '...and so ends the tale of Maginus Jellimakinus the Mage.<br/><br/>Your score: ???';    
+   }
+}
   
 document.getElementById('map').appendChild(map.canvas);
 
@@ -140,19 +151,20 @@ actor.on('Turn', centerOnPlayer);
 window.onresize = centerOnPlayer;
 
 function enableBeam() {
-    document.getElementById('msg').innerHTML = 'Choose direction by hovering adjacent tiles, fire with left mouse';
+    setMessage('Choose direction by hovering adjacent tiles, fire with left mouse');
     doBeam = true;
     actor.dir.x = 0;
     actor.dir.y = 0;
 }
 
 function disableBeam() {
-    document.getElementById('msg').innerHTML = '';
+    setMessage('');
     doBeam = false;
 }
 
 actor.on('Kill', function () {
-     document.getElementById('msg').innerHTML = '...and so ends the tale of Maginus Jellimakinus the Mage.<br/><br/>Your score: ???';
+     setMessage('dead');
+     console.log('player killed');
 });
 
 //Testing projectile aiming
@@ -236,6 +248,9 @@ map.canvas.onmousedown = function (e) {
 }
 
 document.onkeydown = function (e) {
+    if (!actor.isAlive()) {
+        return;
+    }
     if (e.code === 'KeyW') {
         actor.moveUp();
         map.processTurn();

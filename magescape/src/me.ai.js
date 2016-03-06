@@ -59,7 +59,7 @@ me.AI = function (map, attributes) {
     ;
     p.on('Hit', function (other) {
       if (other === map.player()) {
-        other.kill();        
+        map.player().kill();        
       }
     });
   }
@@ -105,6 +105,10 @@ me.AI = function (map, attributes) {
       return;
     }
 
+    if (!map.player().isAlive()) {
+      return;
+    }
+
     //If the player is in range, wake up from slumber.
     turnTowardsPlayer();
     facingTile = map.data.get(p.x + actor.dir.x, p.y + actor.dir.y);
@@ -114,9 +118,10 @@ me.AI = function (map, attributes) {
 
     //Ranged AI
     if (mroll < 80) {    
-      if (actor.properties.type !== 'ranged' && dist() === 1 && mroll < 80) {
+      if (actor.properties.type !== 'ranged' && dist() === 1 && mroll < 95) {
         //console.log('Mellee killed the player');
         map.player().kill();
+        console.log('melee killed player');
       } else if (ranged && !facingWall && (pp.x == p.x || pp.y == p.y) && mroll < 20) {
         fire();
       } else if (droll < 0.5 && (actor.properties.type !== 'ranged' || pp.y != p.y)) {
