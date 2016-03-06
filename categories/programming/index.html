@@ -1,0 +1,748 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>programming | tinkerer.xyz</title>
+  <meta name="author" content="chris">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="tinkerer.xyz"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.ico" rel="shortcut icon">
+  <link rel="alternate" href="/atom.xml" title="tinkerer.xyz" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+  
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-55610135-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div id="nav-top">
+  <div class="alignleft main-title">
+    <h1>tinkerer.xyz</h1>
+    <h2></h2>
+  </div>
+  <nav id="main-nav" class="alignright">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+  <div class="clearfix"></div>
+</div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title category">programming</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-06T20:08:37.000Z"><a href="/2016/03/06/why-no-loops-in-js/">Mar 6 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/03/06/why-no-loops-in-js/">Why you shouldn&#39;t use for-loops in JavaScript, and how to avoid them</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>(this is a repost of a lost article - it’s a couple of months old as of writing this)</p>
+<p><em>Using for-loops in JavaScript is kinda messy, especially when trying to go through the keys of an object, or if trying to create a closure within it that depends on the iterator.</em></p>
+<p>The cool thing though, is that you don’t really need to use for loops in JavaScript (with one exception), which leads to much cleaner code, and potentially less bugs.</p>
+<p>Let’s look at some examples!</p>
+<h2 id="Looping-through-arrays-and-dealing-with-closures-inside-the-loop-body"><a href="#Looping-through-arrays-and-dealing-with-closures-inside-the-loop-body" class="headerlink" title="Looping through arrays, and dealing with closures inside the loop body"></a>Looping through arrays, and dealing with closures inside the loop body</h2><pre><code>Consider this code:
+//Assume nodes is an array of DOM nodes
+//Don&apos;t do it this way!
+for (var i = 0; i &lt; nodes.length; i++) {
+  nodes[i].onclick = function () {
+    alert(&apos;Hello world from node &apos; + i);  
+  };
+}
+</code></pre><p>Can you spot the bug? It’s a pretty obvious one - but may be less obvious if not familiar with how variables in closures are captured. The expected result for most people would probably be that the nodetriggered an alert when clicked, containing the string Hello world from node with the node’s index in the nodes list tacked on. But that’s not what happens.</p>
+<p>Instead, what happens is that all the nodes trigger an alert with the length of the nodes array tacked on when clicked. Why is that? Well, when defining closures in JavaScript, all variables accessible in the same scope as the closure will be captured by that closure. “Captured” just means “will be made accessible from”.</p>
+<p>This means that referring to i referres to the variable i outside the closure. The closure won’t execute until the user clicks the node it’s attached to, and when they do, the i variable will have the value it had when done iterating through the nodes - which is the length of the array.</p>
+<p>To further illustrate:</p>
+<pre><code>//Assume nodes is an array of DOM nodes
+//Don&apos;t do it this way!
+for (var i = 0; i &lt; nodes.length; i++) {
+  nodes[i].onclick = function () {
+    alert(&apos;Hello world from node &apos; + i);  
+  };
+}
+i = &apos;1337&apos;;
+</code></pre><p>Now clicking any of the DOM nodes will spawn an alert with the text Hello world from node 1337.</p>
+<p>Also notice how you can reference i outside of the loop. This is because in JavaScript, all variables are lifted to the top of the current scope regardless of where they were defined.</p>
+<p>So how can we fix this? One approach is to use a self-executing closure:</p>
+<pre><code>//Assume nodes is an array of DOM nodes
+//Don&apos;t do it this way!
+for (var i = 0; i &lt; nodes.length; i++) {
+  nodes[i].onclick = (function (myIndex) {
+    return function () {
+      alert(&apos;Hello world from node &apos; + myIndex);  
+    };
+  })(i);
+}
+</code></pre><p>That looks pretty nasty, huh?</p>
+<p>This creates a function that executes immediately, with one argument - myIndex. It’s called with i as its argument, thus copying the current value of i into myIndex inside the function scope. It then returns the actual function we want to bind to - which now uses myIndex instead. This will work as intended, but it’s quite messy.</p>
+<p>Cue “The Right Way”…</p>
+<pre><code>//Assume nodes is an array of DOM nodes
+nodes.forEach(function (node, i) {
+  node.onclick = function () {
+    alert(&apos;Hello world from node &apos; + i;  
+  };  
+});
+</code></pre><p>That’s much simpler, isn’t it? We no longer need a variable to keep track of the iteration, we no longer have to access the node through the array, and most importantly - we now have proper scoping inside the loop.<br>forEach is an array function. It accepts two arguments - the first is a function, the second is the calling context. The this keyword will point to the calling context within the function supplied in the first argument. The supplied function supports two arguments also - the first is an element in the array, the second will contain the current iteration count.</p>
+<p>This function is very useful regardless of what you’re doing in the loop body, mainly because:</p>
+<ul>
+<li>The loop body has its own local scope</li>
+<li>It’s more straight-forward</li>
+<li>No need to use a variable to keep track of the current element</li>
+</ul>
+<h2 id="Looping-Through-Object-Keys"><a href="#Looping-Through-Object-Keys" class="headerlink" title="Looping Through Object Keys"></a>Looping Through Object Keys</h2><p>So what about Objects?</p>
+<p>Consider this code:</p>
+<pre><code>var obj = {
+  &quot;field1&quot;: &quot;foo&quot;,
+  &quot;field2&quot;: &quot;bar  
+};
+
+//Don&apos;t do it this way!
+for (var o in obj) {
+  if (obj.hasOwnProperty(o)) {
+    alert(obj[o]);  
+  }  
+}
+</code></pre><p>Writing that code gets tedious after a while, and has the same issues as the above example as far as scoping goes. Instead, we can use the Object.keys() prototype. This returns an array of keys owned by the supplied object. So now we can use forEach on it!</p>
+<pre><code>var obj = {
+  &quot;field1&quot;: &quot;foo&quot;,
+  &quot;field2&quot;: &quot;bar  
+};
+
+Object.keys(obj).forEach(function (key) {
+  alert(obj[key]);
+});
+</code></pre><p>That looks much nicer to me at least, and comes with much less caveats.<br>Filtering arrays</p>
+<p>Consider the following code to remove the foo entry from an array:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;  
+];
+
+//Don&apos;t do it this way!
+var newData = [];
+for (var i = 0; i &lt; data.length; i++) {
+  if (data[i] !== &apos;foo&apos;) {
+    newData.push(data[i]);  
+  }      
+}
+</code></pre><p>So how can we do away with the for loop here? You might think about doing something like this:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;  
+];
+
+//Don&apos;t do it this way!
+var newData = [];
+data.forEach(function (item) {
+  if (item !== &apos;foo&apos;) {
+    newData.push(item);  
+  }  
+});
+</code></pre><p>Which would work, and it is a bit nicer, but there’s a better way still.<br>Arrays have a function called filter that allows us to remove elements from inside it and return a new array. If the closure returns true, the element will be included in the new array. If it returns false, it won’t:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;
+];
+
+data = data.filter(function (item) {
+  return item !== &apos;foo&apos;;  
+});
+</code></pre><p>That’s much nicer, isn’t it? It’s clear, straight-forward, and doesn’t use an extra variable. This function is also very useful to see if something exists in the array:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;  
+];
+
+if (
+     data.filter(function (item) {
+       return item === &apos;foo&apos;;
+     }).length &gt; 0
+   ) {
+    //There&apos;s a &quot;foo&quot; entry in the data!
+}
+</code></pre><h2 id="When-you-only-need-a-few-elements"><a href="#When-you-only-need-a-few-elements" class="headerlink" title="When you only need a few elements.."></a>When you only need a few elements..</h2><p>In some cases, it’s not necessary to iterate through every element in an array. An example would be if you need to find a particular entry. Let’s say we have an array of objects, and want to call the hello function of the objects whose name is foo. But we don’t know where in the array it is:</p>
+<pre><code>var data = [
+  {
+    &apos;name&apos;: &apos;foo&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from foo!&apos;); 
+    }  
+  },
+  {
+    &apos;name&apos;: &apos;bar&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from bar!&apos;);  
+    }  
+  }
+];
+
+//Do not do this!
+data.forEach(function (item) {
+  if (item.name === &apos;foo&apos;) {
+    item.hello();  
+  }  
+});
+</code></pre><p>This is bad. Why? Because it loops through all the elements in the array. It’s not possible to stop iteration of a foreach by returning either, since that will only return from the closure - not the loop.</p>
+<p>Luckily, there’s a function for that, and it’s called some. some is another array function. It’s identical to forEach with one crucial exception: returning true from the loop callback will stop looping:</p>
+<pre><code>var data = [
+  {
+    &apos;name&apos;: &apos;foo&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from foo!&apos;); 
+    }  
+  },
+  {
+    &apos;name&apos;: &apos;bar&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from bar!&apos;);  
+    }  
+  }
+];
+
+data.some(function (item) {
+  if (item.name === &apos;foo&apos;) {
+    item.hello();
+    //Exit from the loop
+    return true;  
+  }  
+});
+</code></pre><p>Mapping objects - when you want to turn one object into another<br>In some cases, it’s useful to be able to take an object and then either supplement its properties, or filter them in some way. For this, we have the map function:</p>
+<pre><code>var data = [
+  {
+    &quot;name&quot;: &quot;foobar&quot;,
+    &quot;uselessAttribute&quot;: &quot;asdlhasd&quot;  
+  },
+  {
+    &quot;name&quot;: &quot;helloworld&quot;
+  } 
+];
+
+//Add an ID field to all the objects in the list, 
+//and remove the uselessAttribute field
+data = data.map(function (item, i) {
+  return {
+    &quot;name&quot;: item.name,
+    &quot;id&quot;: i  
+  };
+});
+
+//data now looks like this:
+[
+  {
+    &quot;name&quot;: &quot;foobar&quot;,
+    &quot;id&quot;: 0  
+  },
+  {
+    &quot;name&quot;: &quot;helloworld&quot;,
+    &quot;id&quot;: 1
+  }
+]
+</code></pre><p>The map function has some very interesting uses. One that I often use is in serialization. Let’s say we have a collection object of some sort, maintaining a list of other objects as well as internal properties. Let’s also assume that each of the contained objects have a function - toJSON - that returns an object with the properties it serializes. Now let’s say we want to serialize the collection object:</p>
+<pre><code>function MySubObject {    
+  function toJSON() {
+    //...serialization code here...  
+  }
+
+  //Public interface
+  return {
+    toJSON: toJSON,
+    ...
+  }  
+}
+
+function MyObject {
+  var children = [], //Children contains MySubObject objects
+      properties = {
+        //Lots of properties here  
+      }
+  ;    
+
+  function toJSON() {
+    return {
+      properties: properties,
+      //Notice how we serialize all the children in one go
+      children: children.map(function (child) {
+        return child.toJSON();  
+      })  
+    }  
+  }
+
+  return {
+    toJSON: toJSON  
+  }
+}
+</code></pre><h2 id="The-Exception"><a href="#The-Exception" class="headerlink" title="The Exception"></a>The Exception</h2><p>There’s one use case that for loops (or while-loop) are still valid for, and that is if you need to do something x amount of times, where x is just a number and not the length of an array.</p>
+<pre><code>for (var i = 0; i &lt; 99; i++) {
+  console.log(i);
+}
+</code></pre><p>I’m not aware of any way of doing this without using loop keywords. And even if there is one, it’s likely that using a regular for loop is better.<br>Or you can write your own boilerplate:</p>
+<pre><code>function forRange(c, fn, ctx) {
+  for (var i = 0; i &lt; c; i++) {
+    fn.apply(ctx, [i]);  
+  }
+} 
+
+forRange(99, function (i) {
+  console.log(i);  
+});
+</code></pre><h2 id="Further-reading"><a href="#Further-reading" class="headerlink" title="Further reading"></a>Further reading</h2><p>Also check out reduce and every!</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/javascript/">javascript</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/03/06/why-no-loops-in-js/&title=《Why you shouldn't use for-loops in JavaScript, and how to avoid them》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/03/06/why-no-loops-in-js/&title=Why you shouldn't use for-loops in JavaScript, and how to avoid them'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/03/06/why-no-loops-in-js/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/help-accidental-compiler/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/help-accidental-compiler/">Help, I accidentally built a compiler!</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p><strong>When I was 13 years old, I took an interest in programming. One of the primary driving forces was that I really, really wanted to build a game. Specifically, I wanted to build a role playing game. 17 years later, my quest is still not completed.</strong></p>
+<h2 id="The-Quest"><a href="#The-Quest" class="headerlink" title="The Quest"></a>The Quest</h2><p>I’ve lost count on how many times I’ve started building my Super Awesome Role Playing Game. Dozens for sure. Usually I’ve made it to some half-assed state where I have a few really basic things working before real-life’s come calling on me. Sometimes I’ve made it further, to the point where something’s been playable, and other times I’ve strayed so far off the path in my quest that I’ve ended up doing something completely different, yet tangibly related (like the at least two times I ended up building UI libraries instead - the latest which is available <a href="http://tinkerer.xyz/ThursUI">here</a>). </p>
+<p>My compiler is very much of the “how did I even end up here”-type. </p>
+<h2 id="It-Begins-Again"><a href="#It-Begins-Again" class="headerlink" title="It Begins (Again)"></a>It Begins (Again)</h2><p>My latest quest started sometime around August 2014. I was able to get a few hours a week to do pet projects when my work schedule decreased from 16-ish hour days to a more reasonable 10-ish. And what better way to use those extra hours after coding than for more coding? I resurrected my seemingly unattainable quest from the depths of my journal, and began thinking the same thoughts I had so many times before. 2d? 3d? C++? Node/JS? Some existing engine? After a week or two I settled on good old C++, mostly because at the time I was really, really tired of the web-stack which had been my day job for some time. And off I went; starting to define the architecture for <em>The Engine</em>. Again. </p>
+<p>All was well. Until it became time to choose a scripting language. Lua is usually my goto-solution, as it’s lean, fast, and fairly easy to bind to if the game/engine is written with it in mind from the beginning. This time though, things were different. A friend of mine had been talking a lot about programming language theory, and his own quest to build his own programming language. The discussions where quite interesting, and piqued my own interest in the topic. I started thinking that maybe a custom solution would be superior. A language designed to build RPG’s and nothing else. A language where RPG-related concepts were language types and constructs. I caved to my inner cravings of reinventing the wheel, and set out to define a syntax for <em>The Language</em>. All bets where off at this point.</p>
+<p>I started reading whatever I could on implementing virtual machines. I didn’t really find any good material for non-lisp/scheme languages, so I was mostly fumbling around in the dark. I ended up stealing a few instructions from x86 assembly, and created a weirdly encoded bytestream and a bunch of case statements. After not too long, I had a simple thing running where I could perform basic math on some pre-determined registers. I was completely hooked. The code was so simple, but it had so much potential. That’s when I decided - “people will call me crazy, but I’m gonna do this thing”.</p>
+<p>I wrote the lexer and parser by hand, and created a simple abstract syntax tree to do code generation. The code was ugly as hell, but was eventually able to compile my language to my own custom bytecode, running in my own custom vm. I felt pretty bad ass.</p>
+<p><em>First version of the syntax: defining a Hitpoint character attribute</em></p>
+<pre><code>attribute Hitpoints
+    meta
+        title &quot;Hitpoints&quot;
+    end
+    on change
+      if Hitpoints &lt; 0 
+          ; The character is dead!
+      end
+    end
+end
+</code></pre><p>Before I knew it, I had implemented character attributes, AI, items, skills, buffs/de-buffs, and all sorts of things. Finally it was time to pull it all together and create my game! </p>
+<h2 id="Help-I-need-a-UI"><a href="#Help-I-need-a-UI" class="headerlink" title="Help, I need a UI"></a>Help, I need a UI</h2><p>After I had my client integrated and up and running (the vm/engine was written as a headless server at that point), I realized I had 99 problems, and UI was one of them. I searched far and wide for days, and just couldn’t find anything that looked good enough. No disrespect to those of you out there maintaining things like CEGUI - my requirements were somewhat strict. For one, I really wanted something vector based. I’m not an artist, so creating skins is a pain when having to deal with texture atlases - I wanted CSS-esque styling, and I wanted crisp rendering without artifacts when running at high resolutions. A lot of the ones I tried didn’t compile within a reasonable amount of time either, which excluded them immediately (as in - it took me longer than two hours to gather up all the dependencies and get the library to compile).</p>
+<p>I changed my searches to find hardware accelerated vector rasterizers instead. It didn’t take long before I stumbled across <a href="https://github.com/memononen/nanovg" target="_blank" rel="external">nanovg</a>, which looked absolutely perfect. The demo was exactly what I was looking for. Unfortunately, I couldn’t find a UI library built on top of it, so over the next couple of weeks I created <a href="http://tinkerer.xyz/ThursUI">a crude one myself</a>. </p>
+<h2 id="Help-everything-I-did-was-wrong"><a href="#Help-everything-I-did-was-wrong" class="headerlink" title="Help, everything I did was wrong!"></a>Help, everything I did was wrong!</h2><p>In January 2015, the situation at work changed, and I was unable to continue grooming my pet project. Back into the journal it went. Then three months later, I was once again in a position to devote a couple of hours here and there to it. But of course - in typical fashion - I made the decision to abandon everything and start from scratch - this time building the compiler/vm as a separate library, meant to be used similarly to Lua where it’s integrated into other games/engines.<br>This might seem a bit drastic, but I had learned quite a lot during those 5 months of being away from the code, and I knew that if I started fresh, I’d end up with something a whole lot better. </p>
+<p>I’ve now been working on and off for 7 months on the new version, and it’s closing in on the point where it’s mature enough to be used. The concept is pretty much the same as my “test run”, but the syntax is now more C-ish than Pascal-ish. It also solves certain domain problems in a better, more general way. As an example - instead of having primitives for buffs and debuffs, now there’s just a generic “timer” primitive that has optional modifiers, and that can be applied to an actor in the game. It’s also much, much faster than the first version, and have several things the first version lacked (like variables and proper functions, localization support, a debugger, and more). </p>
+<p><em>The current version of the language:</em></p>
+<pre><code>attribute HitPoints : InitialValue(100), Max(MaxHealth) {
+  meta {
+    localized title &quot;Hit Points&quot;;
+    localized description &quot;Character Health&quot;;
+  }
+
+  on change {
+    print(&quot;Health changed, and is now&quot;, HitPoints);
+    if HitPoints &lt;= 0 {
+      actor-&gt;kill();
+    }
+  }
+}
+</code></pre><h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>For some, the destination is the most important part. For others - like me - the journey is where it’s at. Every time I’ve started this project I’ve gotten something out of it. This time, I got a very deep understanding of compilers, and virtual machines - two areas that were pretty much magic to me prior to starting. I also got a decent <a href="http://tinkerer.xyz/ThursUI">prototyping UI library</a> out of it, and a working domain-specific scripting language </p>
+<p>The first public preview version of the language will be released soon under a BSD-style license.</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/gamedev/">gamedev</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/help-accidental-compiler/&title=《Help, I accidentally built a compiler!》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/help-accidental-compiler/&title=Help, I accidentally built a compiler!'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/help-accidental-compiler/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Setting up Visual Studio Code with Make</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
+<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
+<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
+<pre><code>{
+    &quot;version&quot;: &quot;0.0.1&quot;,
+    &quot;command&quot;: &quot;make&quot;,
+    &quot;tasks&quot;: [
+      {
+        &quot;taskName&quot;: &quot;rebuild&quot;,
+        &quot;isBuildCommand&quot;: true,
+        &quot;problemMatcher&quot;: {
+            &quot;owner&quot;: &quot;cpp&quot;,
+            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
+            &quot;pattern&quot;: {
+                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
+                &quot;file&quot;: 1,
+                &quot;line&quot;: 2,
+                &quot;column&quot;: 3,
+                &quot;severity&quot;: 4,
+                &quot;message&quot;: 5
+            }
+        }
+      },
+      {
+        &quot;taskName&quot;: &quot;run&quot;,
+        &quot;isTestCommand&quot;: true,
+        &quot;showOutput&quot;: &quot;always&quot;
+      }
+  ]
+}
+</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
+<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  
+    <form action="//google.com/search" method="get" accept-charset="utf-8">
+      <input type="search" name="q" results="0" placeholder="Suche">
+      <input type="hidden" name="q" value="site:tinkerer.xyz">
+    </form>
+  
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Neueste Artikel</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2016/03/06/why-no-loops-in-js/">Why you shouldn&#39;t use for-loops in JavaScript, and how to avoid them</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/hello-world/">Hello World</a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Kategorien</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/electronics/arduino/">arduino</a><small>2</small></li>
+  
+    <li><a href="/categories/electronics/">electronics</a><small>3</small></li>
+  
+    <li><a href="/categories/programming/gamedev/">gamedev</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/howto/">howto</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/javascript/">javascript</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/">programming</a><small>3</small></li>
+  
+    <li><a href="/categories/electronics/arduino/projects/">projects</a><small>0</small></li>
+  
+    <li><a href="/categories/synthesizers/">synthesizers</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <div class="entry">
+    
+      <span><a href="/tags/7-Segment-Display/">7 Segment Display<small>1</small></a></span>
+    
+      <span><a href="/tags/74HC595/">74HC595<small>1</small></a></span>
+    
+      <span><a href="/tags/CV/">CV<small>1</small></a></span>
+    
+      <span><a href="/tags/MCP4922/">MCP4922<small>0</small></a></span>
+    
+      <span><a href="/tags/MIDI/">MIDI<small>2</small></a></span>
+    
+      <span><a href="/tags/PCB/">PCB<small>2</small></a></span>
+    
+      <span><a href="/tags/Shift-Register/">Shift Register<small>1</small></a></span>
+    
+      <span><a href="/tags/attiny/">attiny<small>1</small></a></span>
+    
+      <span><a href="/tags/synthesizer-history/">synthesizer history<small>1</small></a></span>
+    
+  </div>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div id="foot-nav">
+  <ul class="social">
+    
+      <li><a class="github" href="https://github.com/cvasseng" title="github">github</a></li>
+    
+      <li><a class="rss" href="/atom.xml" title="rss">rss</a></li>
+    
+  </ul>
+</div>
+<div>
+  
+    &copy; 2016 chris
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+  <script type="text/javascript">
+    var disqus_shortname = 'tinkererxyz';
+
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+  </script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<script type="text/javascript">
+  function navbar() {
+    var top = $('#nav-top').innerHeight();
+    $('#header').css('min-height', top);
+  }
+  navbar();
+  $(window).resize(navbar);
+</script>
+<div id="totop" class="footer-btn">
+  <a title="Zurück Nach Oben"><img src="/img/scrollup.png"/></a>
+</div>
+
+<script type="text/javascript">
+  $(function(){ 
+	// When to show the scroll link
+	// higher number = scroll link appears further down the page   
+	var upperLimit = 800;
+	
+	// Our scroll link element
+	var scrollElem = $('#totop');
+   
+	// Scroll to top speed
+	var scrollSpeed = 500;
+   
+	// Show and hide the scroll to top link based on scroll position   
+	scrollElem.hide();
+	$(window).scroll(function () {            
+		var scrollTop = $(document).scrollTop();       
+		if ( scrollTop > upperLimit ) {
+		  $(scrollElem).stop().fadeTo(300, 1); // fade back in
+		  $(scrollElem).animate({bottom: "50px"}, { queue: false, duration: 10 });
+		} else {
+		  $(scrollElem).stop().fadeTo(300, 0); // fade out
+	      $(scrollElem).animate({bottom: "-200px"}, { queue: false, duration: 10 });
+			
+		}
+	});
+
+	// Scroll to top animation on click
+	$(scrollElem).click(function(){
+	  $('html, body').animate({scrollTop:0}, scrollSpeed);
+	  $(scrollElem).animate({bottom: "-200px"}, { queue: false, duration: 10 });
+	  return false;
+	});
+  });
+</script>
+
+</body>
+</html>

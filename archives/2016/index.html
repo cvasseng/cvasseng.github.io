@@ -1,0 +1,1141 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Archiv: 2016 | tinkerer.xyz</title>
+  <meta name="author" content="chris">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="tinkerer.xyz"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.ico" rel="shortcut icon">
+  <link rel="alternate" href="/atom.xml" title="tinkerer.xyz" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+  
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-55610135-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div id="nav-top">
+  <div class="alignleft main-title">
+    <h1>tinkerer.xyz</h1>
+    <h2></h2>
+  </div>
+  <nav id="main-nav" class="alignright">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+  <div class="clearfix"></div>
+</div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title">2016</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-06T20:08:37.000Z"><a href="/2016/03/06/why-no-loops-in-js/">Mar 6 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/03/06/why-no-loops-in-js/">Why you shouldn&#39;t use for-loops in JavaScript, and how to avoid them</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>(this is a repost of a lost article - it’s a couple of months old as of writing this)</p>
+<p><em>Using for-loops in JavaScript is kinda messy, especially when trying to go through the keys of an object, or if trying to create a closure within it that depends on the iterator.</em></p>
+<p>The cool thing though, is that you don’t really need to use for loops in JavaScript (with one exception), which leads to much cleaner code, and potentially less bugs.</p>
+<p>Let’s look at some examples!</p>
+<h2 id="Looping-through-arrays-and-dealing-with-closures-inside-the-loop-body"><a href="#Looping-through-arrays-and-dealing-with-closures-inside-the-loop-body" class="headerlink" title="Looping through arrays, and dealing with closures inside the loop body"></a>Looping through arrays, and dealing with closures inside the loop body</h2><pre><code>Consider this code:
+//Assume nodes is an array of DOM nodes
+//Don&apos;t do it this way!
+for (var i = 0; i &lt; nodes.length; i++) {
+  nodes[i].onclick = function () {
+    alert(&apos;Hello world from node &apos; + i);  
+  };
+}
+</code></pre><p>Can you spot the bug? It’s a pretty obvious one - but may be less obvious if not familiar with how variables in closures are captured. The expected result for most people would probably be that the nodetriggered an alert when clicked, containing the string Hello world from node with the node’s index in the nodes list tacked on. But that’s not what happens.</p>
+<p>Instead, what happens is that all the nodes trigger an alert with the length of the nodes array tacked on when clicked. Why is that? Well, when defining closures in JavaScript, all variables accessible in the same scope as the closure will be captured by that closure. “Captured” just means “will be made accessible from”.</p>
+<p>This means that referring to i referres to the variable i outside the closure. The closure won’t execute until the user clicks the node it’s attached to, and when they do, the i variable will have the value it had when done iterating through the nodes - which is the length of the array.</p>
+<p>To further illustrate:</p>
+<pre><code>//Assume nodes is an array of DOM nodes
+//Don&apos;t do it this way!
+for (var i = 0; i &lt; nodes.length; i++) {
+  nodes[i].onclick = function () {
+    alert(&apos;Hello world from node &apos; + i);  
+  };
+}
+i = &apos;1337&apos;;
+</code></pre><p>Now clicking any of the DOM nodes will spawn an alert with the text Hello world from node 1337.</p>
+<p>Also notice how you can reference i outside of the loop. This is because in JavaScript, all variables are lifted to the top of the current scope regardless of where they were defined.</p>
+<p>So how can we fix this? One approach is to use a self-executing closure:</p>
+<pre><code>//Assume nodes is an array of DOM nodes
+//Don&apos;t do it this way!
+for (var i = 0; i &lt; nodes.length; i++) {
+  nodes[i].onclick = (function (myIndex) {
+    return function () {
+      alert(&apos;Hello world from node &apos; + myIndex);  
+    };
+  })(i);
+}
+</code></pre><p>That looks pretty nasty, huh?</p>
+<p>This creates a function that executes immediately, with one argument - myIndex. It’s called with i as its argument, thus copying the current value of i into myIndex inside the function scope. It then returns the actual function we want to bind to - which now uses myIndex instead. This will work as intended, but it’s quite messy.</p>
+<p>Cue “The Right Way”…</p>
+<pre><code>//Assume nodes is an array of DOM nodes
+nodes.forEach(function (node, i) {
+  node.onclick = function () {
+    alert(&apos;Hello world from node &apos; + i;  
+  };  
+});
+</code></pre><p>That’s much simpler, isn’t it? We no longer need a variable to keep track of the iteration, we no longer have to access the node through the array, and most importantly - we now have proper scoping inside the loop.<br>forEach is an array function. It accepts two arguments - the first is a function, the second is the calling context. The this keyword will point to the calling context within the function supplied in the first argument. The supplied function supports two arguments also - the first is an element in the array, the second will contain the current iteration count.</p>
+<p>This function is very useful regardless of what you’re doing in the loop body, mainly because:</p>
+<ul>
+<li>The loop body has its own local scope</li>
+<li>It’s more straight-forward</li>
+<li>No need to use a variable to keep track of the current element</li>
+</ul>
+<h2 id="Looping-Through-Object-Keys"><a href="#Looping-Through-Object-Keys" class="headerlink" title="Looping Through Object Keys"></a>Looping Through Object Keys</h2><p>So what about Objects?</p>
+<p>Consider this code:</p>
+<pre><code>var obj = {
+  &quot;field1&quot;: &quot;foo&quot;,
+  &quot;field2&quot;: &quot;bar  
+};
+
+//Don&apos;t do it this way!
+for (var o in obj) {
+  if (obj.hasOwnProperty(o)) {
+    alert(obj[o]);  
+  }  
+}
+</code></pre><p>Writing that code gets tedious after a while, and has the same issues as the above example as far as scoping goes. Instead, we can use the Object.keys() prototype. This returns an array of keys owned by the supplied object. So now we can use forEach on it!</p>
+<pre><code>var obj = {
+  &quot;field1&quot;: &quot;foo&quot;,
+  &quot;field2&quot;: &quot;bar  
+};
+
+Object.keys(obj).forEach(function (key) {
+  alert(obj[key]);
+});
+</code></pre><p>That looks much nicer to me at least, and comes with much less caveats.<br>Filtering arrays</p>
+<p>Consider the following code to remove the foo entry from an array:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;  
+];
+
+//Don&apos;t do it this way!
+var newData = [];
+for (var i = 0; i &lt; data.length; i++) {
+  if (data[i] !== &apos;foo&apos;) {
+    newData.push(data[i]);  
+  }      
+}
+</code></pre><p>So how can we do away with the for loop here? You might think about doing something like this:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;  
+];
+
+//Don&apos;t do it this way!
+var newData = [];
+data.forEach(function (item) {
+  if (item !== &apos;foo&apos;) {
+    newData.push(item);  
+  }  
+});
+</code></pre><p>Which would work, and it is a bit nicer, but there’s a better way still.<br>Arrays have a function called filter that allows us to remove elements from inside it and return a new array. If the closure returns true, the element will be included in the new array. If it returns false, it won’t:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;
+];
+
+data = data.filter(function (item) {
+  return item !== &apos;foo&apos;;  
+});
+</code></pre><p>That’s much nicer, isn’t it? It’s clear, straight-forward, and doesn’t use an extra variable. This function is also very useful to see if something exists in the array:</p>
+<pre><code>var data = [
+  &apos;foo&apos;,
+  &apos;bar&apos;  
+];
+
+if (
+     data.filter(function (item) {
+       return item === &apos;foo&apos;;
+     }).length &gt; 0
+   ) {
+    //There&apos;s a &quot;foo&quot; entry in the data!
+}
+</code></pre><h2 id="When-you-only-need-a-few-elements"><a href="#When-you-only-need-a-few-elements" class="headerlink" title="When you only need a few elements.."></a>When you only need a few elements..</h2><p>In some cases, it’s not necessary to iterate through every element in an array. An example would be if you need to find a particular entry. Let’s say we have an array of objects, and want to call the hello function of the objects whose name is foo. But we don’t know where in the array it is:</p>
+<pre><code>var data = [
+  {
+    &apos;name&apos;: &apos;foo&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from foo!&apos;); 
+    }  
+  },
+  {
+    &apos;name&apos;: &apos;bar&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from bar!&apos;);  
+    }  
+  }
+];
+
+//Do not do this!
+data.forEach(function (item) {
+  if (item.name === &apos;foo&apos;) {
+    item.hello();  
+  }  
+});
+</code></pre><p>This is bad. Why? Because it loops through all the elements in the array. It’s not possible to stop iteration of a foreach by returning either, since that will only return from the closure - not the loop.</p>
+<p>Luckily, there’s a function for that, and it’s called some. some is another array function. It’s identical to forEach with one crucial exception: returning true from the loop callback will stop looping:</p>
+<pre><code>var data = [
+  {
+    &apos;name&apos;: &apos;foo&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from foo!&apos;); 
+    }  
+  },
+  {
+    &apos;name&apos;: &apos;bar&apos;,
+    &apos;hello&apos;: function () {
+      alert(&apos;hello from bar!&apos;);  
+    }  
+  }
+];
+
+data.some(function (item) {
+  if (item.name === &apos;foo&apos;) {
+    item.hello();
+    //Exit from the loop
+    return true;  
+  }  
+});
+</code></pre><p>Mapping objects - when you want to turn one object into another<br>In some cases, it’s useful to be able to take an object and then either supplement its properties, or filter them in some way. For this, we have the map function:</p>
+<pre><code>var data = [
+  {
+    &quot;name&quot;: &quot;foobar&quot;,
+    &quot;uselessAttribute&quot;: &quot;asdlhasd&quot;  
+  },
+  {
+    &quot;name&quot;: &quot;helloworld&quot;
+  } 
+];
+
+//Add an ID field to all the objects in the list, 
+//and remove the uselessAttribute field
+data = data.map(function (item, i) {
+  return {
+    &quot;name&quot;: item.name,
+    &quot;id&quot;: i  
+  };
+});
+
+//data now looks like this:
+[
+  {
+    &quot;name&quot;: &quot;foobar&quot;,
+    &quot;id&quot;: 0  
+  },
+  {
+    &quot;name&quot;: &quot;helloworld&quot;,
+    &quot;id&quot;: 1
+  }
+]
+</code></pre><p>The map function has some very interesting uses. One that I often use is in serialization. Let’s say we have a collection object of some sort, maintaining a list of other objects as well as internal properties. Let’s also assume that each of the contained objects have a function - toJSON - that returns an object with the properties it serializes. Now let’s say we want to serialize the collection object:</p>
+<pre><code>function MySubObject {    
+  function toJSON() {
+    //...serialization code here...  
+  }
+
+  //Public interface
+  return {
+    toJSON: toJSON,
+    ...
+  }  
+}
+
+function MyObject {
+  var children = [], //Children contains MySubObject objects
+      properties = {
+        //Lots of properties here  
+      }
+  ;    
+
+  function toJSON() {
+    return {
+      properties: properties,
+      //Notice how we serialize all the children in one go
+      children: children.map(function (child) {
+        return child.toJSON();  
+      })  
+    }  
+  }
+
+  return {
+    toJSON: toJSON  
+  }
+}
+</code></pre><h2 id="The-Exception"><a href="#The-Exception" class="headerlink" title="The Exception"></a>The Exception</h2><p>There’s one use case that for loops (or while-loop) are still valid for, and that is if you need to do something x amount of times, where x is just a number and not the length of an array.</p>
+<pre><code>for (var i = 0; i &lt; 99; i++) {
+  console.log(i);
+}
+</code></pre><p>I’m not aware of any way of doing this without using loop keywords. And even if there is one, it’s likely that using a regular for loop is better.<br>Or you can write your own boilerplate:</p>
+<pre><code>function forRange(c, fn, ctx) {
+  for (var i = 0; i &lt; c; i++) {
+    fn.apply(ctx, [i]);  
+  }
+} 
+
+forRange(99, function (i) {
+  console.log(i);  
+});
+</code></pre><h2 id="Further-reading"><a href="#Further-reading" class="headerlink" title="Further reading"></a>Further reading</h2><p>Also check out reduce and every!</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/javascript/">javascript</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/03/06/why-no-loops-in-js/&title=《Why you shouldn't use for-loops in JavaScript, and how to avoid them》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/03/06/why-no-loops-in-js/&title=Why you shouldn't use for-loops in JavaScript, and how to avoid them'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/03/06/why-no-loops-in-js/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/7_seg_arduino/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p><em>If you just want to know how to connect everything, feel free to skip the first couple of sections</em></p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>You’ve probably seen those glowing digit displays before - you know; the ones used in digital clock radios and old VCRs. They consist of 7 different “segments” that can be illuminated independently of each other (hence the name) to display numbers from 0 to 9, a few letters (a, b, c, d, e, f, h, p, l), and certain punctuation (- .). They’re also pretty cheap and easy to work with, making them good candidates for inclusion in various electronic projects. They do have a few drawbacks though - mainly that they require more current than LCDs, and that they require 8 pins to control (10 for dual digits. Usually.). Output pins on a microcontroller are usually scarce, which brings us to the point of this little post - how to control one using a shift register so that we can do it with 3 pins instead. But first, let’s go through our building blocks.</p>
+<p><img src="/images/7seg.png" alt="7 Segment Display"></p>
+<h3 id="7-Segment-Displays-The-Basics"><a href="#7-Segment-Displays-The-Basics" class="headerlink" title="7 Segment Displays - The Basics"></a>7 Segment Displays - The Basics</h3><p>So, let’s go into a bit more detail on 7 segment displays. Each of the segments contained in the display has a designated input pin used to activate it. The name of the different segments are shown in the below image. By lighting up one or more pins at the same time we can display numbers, a few letters, and some symbols.</p>
+<p><img src="/images/7seg_letters.png" alt="7 Segment - Segments"></p>
+<p>There are two different types of 7 segment displays (not counting color options, intensity and so on) - common anode, and common cathode. The difference between the two is that common anode displays has a shared <em>positive</em> rail, while common cathode has a shared <em>ground</em> rail. This affects how segments are turned on and off. Segments on a common cathode display are turned on by supplying a <em>positive</em> voltage to the segment pin; common anode segments are turned on by supplying <em>ground</em> on the segment pin (or 0 volts). The pin out varies between different models, so be sure to check the datasheet for the one you’re using! 7 segments have been around for a long <em>long</em> time, in fact; they predate modern electronics by 60 years! The more you know..</p>
+<p>While this post discusses how to control 7 segments with a shift register, there are actually specialized CMOS chips created solely for the purpose of driving these displays (such as the <a href="http://www.taydaelectronics.com/cd4543be-cd4543-4543-ic-cmos-bcd-to-7-segment-latches.html" target="_blank" rel="external">CD4543</a>). These are usually called <em>BCD to 7 segment converters</em>. A BCD (binary coded decimal) is really just a binary number in the range of 0 to 9 in the decimal system. The converters usually have 8 outputs, one for each of the segments in the display, and 4 main inputs - BCDA. As an example, setting every other input to 1 means that the input as a total is 1010 in binary (9 in decimal), and would result in the outputs A, B, C, F, G activating, which would display a 9 on the display. Input the binary representation on the BCDA input ports, and that number will be displayed on the LED display. Simple! It has one huge drawback though, especially in the case of the CD4543 chip; you can only display numbers from 0 to 9! So what about all the other things we could display on there? There’s 128 different configurations on a 7 segment, including 0..9, a few letters, and a few symbols. If we want to utilize all (or, more than the numbers at least) them we need more control than a BCD -&gt; 7 segment chip can offer.</p>
+<h3 id="Shift-Registers-What-Are-They-And-How-Do-They-Work"><a href="#Shift-Registers-What-Are-They-And-How-Do-They-Work" class="headerlink" title="Shift Registers - What Are They And How Do They Work?"></a>Shift Registers - What Are They And How Do They Work?</h3><p>Shift registers <em>shift</em> bits along its output ports (of which they usually have 8). What does this mean? Well, if you put 1 bit on it, that bit will dictate the output of port 1. If you put another bit on it in succession, the first bit will be shifted to port 2, and the new bit will end up at port 1. Think of it like a conveyor belt passing through 8 loading bays. So we have 8 trucks (whatever’s connected to the outputs) patiently waiting for their load. We put the load on the conveyor belt one box at a time. After placing a box, we move the belt so that the box ends up at the next loading bay. After we’ve loaded 8 boxes and thus have moved the belt 7 steps, all the trucks can load the boxes, and off they go! But! We need to be able to signal when the boxes are ready to be loaded and carried away, otherwise a truck might end up driving off with a box that should’ve gone into another truck. So, we’ll use a really bright light to indicate if we’re done or not. Before we start loading all the boxes, we will turn the light off. Once we’ve moved all the boxes into position, we’ll turn it on to signal the drivers that they’re good to go. On our shift register this mechanism is called a <em>latch</em>, and similarly to the light in our conveyor belt analogy we need to set the latch to a logical 0 before we start stuffing bits into the register, and once we’re done we need to set it to a logical 1. Once the latch is set to 1 the chip will “lock” the state of its outputs to the whatever the state of the bit on the given position is. </p>
+<p>As mentioned in the introduction, the register only requires 3 pins to operate. You’ve probably already guessed that one of them is to set the latch, but what about the other two? Well, the second one is to set the <em>clock</em>, and the third one is to set the <em>data</em>. To put a bit into the register we first need to set the data pin to the value we want our new bit to have. Once this is done, we need to send a pulse into the clock pin to let the register know that the current value on the data pin is the value we want. This pulse is in other words responsible for preforming the actual shifting. A pulse is sent by flipping the state of the clock pin for a brief period. </p>
+<p>The chip I’m using for this post is called <a href="http://www.taydaelectronics.com/datasheets/A-024.pdf" target="_blank" rel="external">74HC595</a> and is widely available for a quarter or so. I know that some suppliers geared more towards hobbyists charge &gt;$1.00, but personally I wouldn’t pay that much since you’d get 4 of them for that price through different vendors (e.g. <a href="http://www.taydaelectronics.com" target="_blank" rel="external">tayda</a>, <a href="http://mouser.com" target="_blank" rel="external">mouser</a>). </p>
+<p><img src="/images/74HC595_pinout.png" alt="74HC595 Pinout"></p>
+<h3 id="The-circuit"><a href="#The-circuit" class="headerlink" title="The circuit"></a>The circuit</h3><p><strong>What you need</strong></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resistors, 220-600ohm</td>
+<td>7</td>
+</tr>
+<tr>
+<td>74HC595</td>
+<td>1</td>
+</tr>
+<tr>
+<td>7 Segment Display</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Arduino</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Setting everything up</strong></p>
+<p>For our shift register -&gt; display connection, we’ll connect everything in the most intuitive way - out 1 to in a, out 2 to in b, out 3 to in c and so on. <strong>Remember to check the pin out on your 7 segment!</strong> They vary greatly. </p>
+<p><img src="/images/shift_segment.png" alt=""><br><em>Schematic. Note that I’ve used the ATMEGA chip, so look at the caption of the pins, not the pin numbers to see what Arduino pin you should use!</em></p>
+<p>If the schematic doesn’t quite do if for you, here’s a textual explanation: First, connect pin <strong>8</strong> and <strong>13</strong> on the shift register to <strong>ground</strong>. Pin <strong>16</strong> and <strong>10</strong> goes to <strong>+5V</strong>. Pin <strong>11</strong> goes to Arduino pin <strong>5</strong>, and pin <strong>12</strong> goes to Arduino pin <strong>6</strong>. Lastly, connect pin <strong>14</strong> to Arduino pin <strong>7</strong>.</p>
+<p>Now all we need to do is connect the display to our register. The pin output on the shift register is pretty straight forward - output <strong>1</strong> is on pin <strong>15</strong>, <strong>2</strong> is on <strong>1</strong>, <strong>3</strong> is on <strong>2</strong> and so on. Connect output <strong>1</strong> to the <strong>a</strong> input on the display, <strong>2</strong> to <strong>b</strong>, <strong>3</strong> to <strong>c</strong> and so on. But! There’s a twist - you need to make the segment connections through a resistor. The actual value of the resistors depends on the specific segment you’re using, so be sure to check that.</p>
+<h3 id="The-code"><a href="#The-code" class="headerlink" title="The code"></a>The code</h3><p>Before we jump into the full listing, allow me to explain how the code is structured and what it does. The most important function is - of course - the <code>set7seg</code> function. This is the function that shifts the bits into our register. The <code>SegValue</code> constant contains an ordered array of hex values that correspond to different symbols. As an example, the first element contains the hex code to display <code>0</code> on the display; the ninth element the hex code to display <code>9</code>, and the tenth element contains the hex code to display <code>A</code>. Of course you can feed the <code>set7seg</code> function with any hex number to display symbols not covered in the constant.</p>
+<p>The <code>shiftOut</code> function used to “send” the bits to the shift register is part of the Arduino library and simply handles the nitty gritty details of managing the clock pulse and shifting out individual bits. Instead it allows us to shift out a full byte at a time, where each bit contains the state of a pin. The first bit (from right to left) contains the state of pin 1, the second bit contains the state of pin 2 and so on. So shifting out the number <code>3</code> will set pin 1 and pin 2 high, since <code>3</code> is equal to <code>0000 0011</code> in binary (zeros added for clarity). Think of the bit number as the pin number indexed from right to left. You could connect pin 8 on the register to pin a on the segment, pin 7 to pin b and so on if you’d prefer working with it in left to right order (or change MSBFIRST to LSBFIRST in the <code>set7seg</code> function), but you’d obviously have to change the <code>SegValue</code> constant to reflect the flipped order as well if so.  </p>
+<p>The loop code simply cycles through all the symbols defined in the constant using a simple modulus hack.</p>
+<p><strong>If using common anode..</strong><br>If you’re using a common anode display the on/off states are inverted. A logical 1 will turn the segment off, a logical 0 will turn it off. This also means that you need to invert the values in the <code>SegValue</code> constant if you plan on using them. You can do this by using the not (<code>!</code>) operator. Also remember that you need to use a resistor (220ohm should be fine) between +5 and the two power inputs on your display!</p>
+<p><strong>Code listing</strong></p>
+<figure class="highlight c"><figcaption><span>Full Listing</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Arduino pin connected to the latch pin (ST_CP) on our 74HC595</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LATCHPIN    6</span></span><br><span class="line"><span class="comment">//Arduino pin connected to the clock pin (SH_CP) on our 74HC595</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLOCKPIN    5</span></span><br><span class="line"><span class="comment">//Arduino pin connected to the data pin (DS) on our 74HC595</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DATAPIN     7</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// This is a list of symbols in our constant and their binary and hex code.</span></span><br><span class="line"><span class="comment">// SYM  H G F E  D C B A   HEX</span></span><br><span class="line"><span class="comment">// 0  - 1 0 1 1  1 1 1 1 - 0xBF</span></span><br><span class="line"><span class="comment">// 1  - 0 0 0 0  0 1 1 0 - 0x06</span></span><br><span class="line"><span class="comment">// 2  - 0 1 0 1  1 0 1 1 - 0x5B</span></span><br><span class="line"><span class="comment">// 3  - 0 1 0 0  1 1 1 1 - 0x4F</span></span><br><span class="line"><span class="comment">// 4  - 0 1 1 0  0 1 1 0 - 0x66</span></span><br><span class="line"><span class="comment">// 5  - 1 1 1 0  1 1 0 1 - 0xED</span></span><br><span class="line"><span class="comment">// 6  - 1 1 1 1  1 1 0 1 - 0xFD</span></span><br><span class="line"><span class="comment">// 7  - 1 0 0 0  0 1 1 1 - 0x07</span></span><br><span class="line"><span class="comment">// 8  - 1 1 1 1  1 1 1 1 - 0xFF</span></span><br><span class="line"><span class="comment">// 9  - 1 1 1 0  0 1 1 1 - 0xE7</span></span><br><span class="line"><span class="comment">// 10 - 1 1 1 1  1 1 1 1 - 0xF7</span></span><br><span class="line"><span class="comment">// 11 - 1 1 1 1  1 1 0 0 - 0xFC</span></span><br><span class="line"><span class="comment">// 12 - 1 1 1 1  1 0 0 1 - 0xF9</span></span><br><span class="line"><span class="comment">// 13 - 0 1 0 1  1 1 1 0 - 0x5E</span></span><br><span class="line"><span class="comment">// 14 - 1 1 1 1  1 0 0 1 - 0xF9</span></span><br><span class="line"><span class="comment">// 15 - 1 1 1 1  0 0 0 1 - 0xF1</span></span><br><span class="line"><span class="comment">// Y  - 0 1 1 0  1 1 1 0 - 0x6E</span></span><br><span class="line"><span class="comment">// H  - 1 1 1 1  0 1 1 0 - 0xF6</span></span><br><span class="line"><span class="comment">// L  - 1 0 1 1  1 0 0 0 - 0xB8</span></span><br><span class="line"><span class="comment">// P  - 1 1 1 1  0 0 1 1 - 0xF3</span></span><br><span class="line"><span class="comment">// -  - 1 1 0 0  0 0 0 0 - 0x40</span></span><br><span class="line"><span class="comment">// _  - 1 0 0 0  1 0 0 0 - 0x08</span></span><br><span class="line"><span class="comment">// -  - 1 0 0 0  0 0 0 1 - 0x01</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Helper constant</span></span><br><span class="line"><span class="keyword">const</span> byte SegValue[] = &#123;</span><br><span class="line">  <span class="number">0xBF</span>,</span><br><span class="line">  <span class="number">0x06</span>,</span><br><span class="line">  <span class="number">0x5B</span>,</span><br><span class="line">  <span class="number">0x4F</span>,</span><br><span class="line">  <span class="number">0x66</span>,</span><br><span class="line">  <span class="number">0xED</span>,</span><br><span class="line">  <span class="number">0xFD</span>,</span><br><span class="line">  <span class="number">0x07</span>,</span><br><span class="line">  <span class="number">0xFF</span>,</span><br><span class="line">  <span class="number">0xE7</span>,</span><br><span class="line">  <span class="number">0xF7</span>,</span><br><span class="line">  <span class="number">0xFC</span>,</span><br><span class="line">  <span class="number">0xF9</span>,</span><br><span class="line">  <span class="number">0x5E</span>,</span><br><span class="line">  <span class="number">0xF9</span>,</span><br><span class="line">  <span class="number">0x6E</span>,</span><br><span class="line">  <span class="number">0xF6</span>,</span><br><span class="line">  <span class="number">0xB8</span>,</span><br><span class="line">  <span class="number">0xF3</span>,</span><br><span class="line">  <span class="number">0xC0</span>,</span><br><span class="line">  <span class="number">0x08</span>,</span><br><span class="line">  <span class="number">0x01</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Set the value of our display.</span></span><br><span class="line"><span class="comment">//  ex: setting it to 7:</span></span><br><span class="line"><span class="comment">//  set7Seg(SegValue[7]);</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set7Seg</span><span class="params">(byte num)</span> </span>&#123;</span><br><span class="line">  <span class="comment">//Set the latch to low to prepare the write</span></span><br><span class="line">  digitalWrite(LATCHPIN, LOW);</span><br><span class="line">  <span class="comment">//Shift the entire byte into the register.</span></span><br><span class="line">  <span class="comment">//Note that this function preforms a bit-by-bit shift, and also handles the clock pin.</span></span><br><span class="line">  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, num);</span><br><span class="line">  <span class="comment">//We're done, so set the latch high</span></span><br><span class="line">  digitalWrite(LATCHPIN, HIGH);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">//Prepare pins as outputs</span></span><br><span class="line">  pinMode(LATCHPIN, OUTPUT);</span><br><span class="line">  pinMode(CLOCKPIN, OUTPUT);</span><br><span class="line">  pinMode(DATAPIN, OUTPUT);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> j = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">//Cycle through all the symbols in our SegValue array.</span></span><br><span class="line">  ++j;</span><br><span class="line">  <span class="keyword">if</span> (j % <span class="number">20000</span> == <span class="number">1</span>) &#123;</span><br><span class="line">    set7Seg(SegValue[i % <span class="number">22</span>]);</span><br><span class="line">    i++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/electronics/">electronics</a>, <a href="/categories/electronics/arduino/">arduino</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/74HC595/">74HC595</a>, <a href="/tags/Shift-Register/">Shift Register</a>, <a href="/tags/7-Segment-Display/">7 Segment Display</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/7_seg_arduino/&title=《7 segment LEDs with Arduino and shift registers》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/7_seg_arduino/&title=7 segment LEDs with Arduino and shift registers'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/7_seg_arduino/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/adding-midi-to-monotribe/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>I got the Monotribe a few years ago, when it was brand new. I hadn’t used it much, mostly because it seemed somewhat limited as an actual musical instrument. It is however, very simple to add MIDI capabilities to it and I finally got around to it.</p>
+<p>So let’s take a look.</p>
+<p><img src="images/monotribe_midi.jpg" alt="Monotribe MIDI"></p>
+<p>This is where you can hook up a midi input. I recommend using the connector on the other side of the board instead, but I was lazy and didn’t have the right kind laying around so I just soldered the wires directly to the existing pads. The red one is VCC, the black one GND, and the yellow one the RX input.</p>
+<p>Here’s the circuit I used for decoupling the input from the monotribe circuit board:</p>
+<p><img src="images/midi_in_circuit.png" alt="MIDI input"></p>
+<p>I also did a quick layout for it:</p>
+<p><img src="images/midi_in.png" alt="MIDI input"></p>
+<p>..which got turned into this by the fine folks at <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a> (I have several other uses for this board too, so figured I’d get a proper one made):</p>
+<p><img src="images/midi_in_board.jpg" alt="MIDI in board"></p>
+<p><img src="images/midi_in_board_populated.jpg" alt="MIDI in board populated"></p>
+<p>I of course managed to mess up the silkscreen on the outputs (reads TX instead of RX plus messy positioning), but I have fixed it in the below files. One minor issue though - the solder pads for the resistors ended up being really frickin’ small. They were easy enough to solder though so I haven’t changed the package (it’s a 207/12 IIRC).</p>
+<p>And yes - I was totally too lazy to file away the panel leftovers on the board before populating it. :p It works at least.</p>
+<p><a href="files/monotribemidi.sch">Eagle schematics</a><br><a href="files/monotribemidi.brd">Eagle PCB layout</a></p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/electronics/">electronics</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/PCB/">PCB</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=《Adding MIDI to a monotribe》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=Adding MIDI to a monotribe'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/attiny_and_arduino/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>I’ve had a tube of ATTiny25’s laying around for a while, and finally decided to to something more or less useful with them. I found this <a href="https://code.google.com/p/arduino-tiny/" target="_blank" rel="external">great ATtiny arduino core</a>, and whipped up a quick schematic and board layout to make it easier to prototype with, and sent it off to <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a>. Three boards cost me less than $4 ($3.40-ish), including shipping. Crazy good value.</p>
+<p><img src="images/tiny.png" alt="Schematic"></p>
+<p>A couple of weeks later, this appeared in the mail:<br><img src="images/attiny_board.jpg" alt="Boards"></p>
+<p>Which I quickly assembled and ran the Arduino blink program on after burning the above bootloader to it. I’m using the <a href="https://www.sparkfun.com/products/9825" target="_blank" rel="external">Sparkfun AVR Pocket Programmer</a> which works really well. It took me about 20min from opening the purple envelope with the boards until I had it all running on a breadboard.</p>
+<p><img src="images/attiny_blink.jpg" alt="Blink"></p>
+<p>Note that it’s not really that convinent to run Arduino on the 25 chip as it only has 2kb of flash memory. This means that you can pretty much forget about including any libraries. It’s much better suited to programming in either assembly or c, but this seemed to be the shortest path to verifying that my boards worked. Which they did. :)</p>
+<p>I’m pretty pleased with the boards - even though they have some potential issues with 90 degree traces. The only problem is that they are.. well, tiny. Really tiny. The silkscreen is unreadable without a magnifying glass, at least the pin out part of it.</p>
+<p><a href="files/tiny.sch">Eagle schematics</a><br><a href="files/tiny.brd">Eagle PCB layout</a></p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/electronics/">electronics</a>, <a href="/categories/electronics/arduino/">arduino</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/PCB/">PCB</a>, <a href="/tags/attiny/">attiny</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/attiny_and_arduino/&title=《ATTiny25 and Arduino》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/attiny_and_arduino/&title=ATTiny25 and Arduino'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/attiny_and_arduino/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/hello-world/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/hello-world/">Hello World</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+
+      
+    </div>
+    <footer>
+      
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/hello-world/&title=《Hello World》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/hello-world/&title=Hello World'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/hello-world/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/help-accidental-compiler/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/help-accidental-compiler/">Help, I accidentally built a compiler!</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p><strong>When I was 13 years old, I took an interest in programming. One of the primary driving forces was that I really, really wanted to build a game. Specifically, I wanted to build a role playing game. 17 years later, my quest is still not completed.</strong></p>
+<h2 id="The-Quest"><a href="#The-Quest" class="headerlink" title="The Quest"></a>The Quest</h2><p>I’ve lost count on how many times I’ve started building my Super Awesome Role Playing Game. Dozens for sure. Usually I’ve made it to some half-assed state where I have a few really basic things working before real-life’s come calling on me. Sometimes I’ve made it further, to the point where something’s been playable, and other times I’ve strayed so far off the path in my quest that I’ve ended up doing something completely different, yet tangibly related (like the at least two times I ended up building UI libraries instead - the latest which is available <a href="http://tinkerer.xyz/ThursUI">here</a>). </p>
+<p>My compiler is very much of the “how did I even end up here”-type. </p>
+<h2 id="It-Begins-Again"><a href="#It-Begins-Again" class="headerlink" title="It Begins (Again)"></a>It Begins (Again)</h2><p>My latest quest started sometime around August 2014. I was able to get a few hours a week to do pet projects when my work schedule decreased from 16-ish hour days to a more reasonable 10-ish. And what better way to use those extra hours after coding than for more coding? I resurrected my seemingly unattainable quest from the depths of my journal, and began thinking the same thoughts I had so many times before. 2d? 3d? C++? Node/JS? Some existing engine? After a week or two I settled on good old C++, mostly because at the time I was really, really tired of the web-stack which had been my day job for some time. And off I went; starting to define the architecture for <em>The Engine</em>. Again. </p>
+<p>All was well. Until it became time to choose a scripting language. Lua is usually my goto-solution, as it’s lean, fast, and fairly easy to bind to if the game/engine is written with it in mind from the beginning. This time though, things were different. A friend of mine had been talking a lot about programming language theory, and his own quest to build his own programming language. The discussions where quite interesting, and piqued my own interest in the topic. I started thinking that maybe a custom solution would be superior. A language designed to build RPG’s and nothing else. A language where RPG-related concepts were language types and constructs. I caved to my inner cravings of reinventing the wheel, and set out to define a syntax for <em>The Language</em>. All bets where off at this point.</p>
+<p>I started reading whatever I could on implementing virtual machines. I didn’t really find any good material for non-lisp/scheme languages, so I was mostly fumbling around in the dark. I ended up stealing a few instructions from x86 assembly, and created a weirdly encoded bytestream and a bunch of case statements. After not too long, I had a simple thing running where I could perform basic math on some pre-determined registers. I was completely hooked. The code was so simple, but it had so much potential. That’s when I decided - “people will call me crazy, but I’m gonna do this thing”.</p>
+<p>I wrote the lexer and parser by hand, and created a simple abstract syntax tree to do code generation. The code was ugly as hell, but was eventually able to compile my language to my own custom bytecode, running in my own custom vm. I felt pretty bad ass.</p>
+<p><em>First version of the syntax: defining a Hitpoint character attribute</em></p>
+<pre><code>attribute Hitpoints
+    meta
+        title &quot;Hitpoints&quot;
+    end
+    on change
+      if Hitpoints &lt; 0 
+          ; The character is dead!
+      end
+    end
+end
+</code></pre><p>Before I knew it, I had implemented character attributes, AI, items, skills, buffs/de-buffs, and all sorts of things. Finally it was time to pull it all together and create my game! </p>
+<h2 id="Help-I-need-a-UI"><a href="#Help-I-need-a-UI" class="headerlink" title="Help, I need a UI"></a>Help, I need a UI</h2><p>After I had my client integrated and up and running (the vm/engine was written as a headless server at that point), I realized I had 99 problems, and UI was one of them. I searched far and wide for days, and just couldn’t find anything that looked good enough. No disrespect to those of you out there maintaining things like CEGUI - my requirements were somewhat strict. For one, I really wanted something vector based. I’m not an artist, so creating skins is a pain when having to deal with texture atlases - I wanted CSS-esque styling, and I wanted crisp rendering without artifacts when running at high resolutions. A lot of the ones I tried didn’t compile within a reasonable amount of time either, which excluded them immediately (as in - it took me longer than two hours to gather up all the dependencies and get the library to compile).</p>
+<p>I changed my searches to find hardware accelerated vector rasterizers instead. It didn’t take long before I stumbled across <a href="https://github.com/memononen/nanovg" target="_blank" rel="external">nanovg</a>, which looked absolutely perfect. The demo was exactly what I was looking for. Unfortunately, I couldn’t find a UI library built on top of it, so over the next couple of weeks I created <a href="http://tinkerer.xyz/ThursUI">a crude one myself</a>. </p>
+<h2 id="Help-everything-I-did-was-wrong"><a href="#Help-everything-I-did-was-wrong" class="headerlink" title="Help, everything I did was wrong!"></a>Help, everything I did was wrong!</h2><p>In January 2015, the situation at work changed, and I was unable to continue grooming my pet project. Back into the journal it went. Then three months later, I was once again in a position to devote a couple of hours here and there to it. But of course - in typical fashion - I made the decision to abandon everything and start from scratch - this time building the compiler/vm as a separate library, meant to be used similarly to Lua where it’s integrated into other games/engines.<br>This might seem a bit drastic, but I had learned quite a lot during those 5 months of being away from the code, and I knew that if I started fresh, I’d end up with something a whole lot better. </p>
+<p>I’ve now been working on and off for 7 months on the new version, and it’s closing in on the point where it’s mature enough to be used. The concept is pretty much the same as my “test run”, but the syntax is now more C-ish than Pascal-ish. It also solves certain domain problems in a better, more general way. As an example - instead of having primitives for buffs and debuffs, now there’s just a generic “timer” primitive that has optional modifiers, and that can be applied to an actor in the game. It’s also much, much faster than the first version, and have several things the first version lacked (like variables and proper functions, localization support, a debugger, and more). </p>
+<p><em>The current version of the language:</em></p>
+<pre><code>attribute HitPoints : InitialValue(100), Max(MaxHealth) {
+  meta {
+    localized title &quot;Hit Points&quot;;
+    localized description &quot;Character Health&quot;;
+  }
+
+  on change {
+    print(&quot;Health changed, and is now&quot;, HitPoints);
+    if HitPoints &lt;= 0 {
+      actor-&gt;kill();
+    }
+  }
+}
+</code></pre><h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>For some, the destination is the most important part. For others - like me - the journey is where it’s at. Every time I’ve started this project I’ve gotten something out of it. This time, I got a very deep understanding of compilers, and virtual machines - two areas that were pretty much magic to me prior to starting. I also got a decent <a href="http://tinkerer.xyz/ThursUI">prototyping UI library</a> out of it, and a working domain-specific scripting language </p>
+<p>The first public preview version of the language will be released soon under a BSD-style license.</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/gamedev/">gamedev</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/help-accidental-compiler/&title=《Help, I accidentally built a compiler!》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/help-accidental-compiler/&title=Help, I accidentally built a compiler!'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/help-accidental-compiler/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/midi_and_cv_a_brief_history/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/midi_and_cv_a_brief_history/">MIDI and CV - A Brief History Lesson</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>A long time ago, in a country not so far away, Robert Moog invented one of the first synthesizers - the Moog. As part of his design, he came up with several circuits that could be controlled by an external signal. This signal could come from a keyboard, or it could be produced by another circuit. By patching together several of these modules with this signal - called control voltage (or CV for short) - a complex signal chain was created, producing delicious, analog sounds. </p>
+<p>CV came to be the standard across most manufactures of synthesizers at the time. One of the uses for CV is to transmit pitch information, which of course is crucial when it comes to making sounds. Most manufacturers used a pitch control system called V/Oct (volts per octave) - though some (mainly Korg and Yamaha synths) used a system called Hz/V (Hertz per volt). In a V/Oct pitch control system 0V represents C0, 1V represents C1 and so on. The other notes are spread linearly between the whole numbers, so e.g. C#0 is 0.0833V, D0 is 0.1666V, and B is 0.9166V. In a Hz/V system an octave is represented by doubling the voltage. So C1 is 1V, C2 is 2V, C3 is 4V, C4 is 8V and so on. For modern modular systems V/Oct is by far the dominant one. </p>
+<p><img src="/images/robert_moog.png" alt="Robert Moog"><br><em>Robert Moog posing with some of his Moog synthesizers</em></p>
+<p>CV based systems are extremely flexible. In a modular synth anything can be connected to everything. Sure, sometimes the result would be silence, other times unbearable chaos, but if you wanted to control a filter modulation or a vibrato based on a keyboard, all you had to do was use a patch cable! One major limitation of a control voltage system is that it can only carry one signal at the time. It’s simplicity is what makes it powerful, but also what makes it less tidy than modern standards.</p>
+<p>In addition to the pitch system, a second control voltage was used; called CV/Gate or CV/Trigger. This signal was a simple on/off system, which was used to turn oscillators or other voltage controlled circuits on or off. So in other words - the pitch control voltage was a constant thing, and the gate/trigger signal dictated whether or not the circuit was active or not. Keyboards would have both a pitch voltage and a trigger/gate voltage. The trigger/gate would be activated when a note was pressed down, and deactivated when it was released. The signal itself was said to be off if the voltage was 0 - on if the voltage was whatever the system ran on.</p>
+<p>Back in 1983 digital circuits were becoming increasingly popular, and digital synthesizers started emerging. A replacement for the “obsolete” (in my opinion superior!) control voltage system was deemed necessary to have a more powerful (and standardized) interconnectivity protocol. This replacement was called MIDI, and is still the standard for connecting various pieces of audio equipment (though nowadays it’s common to use USB or even ethernet along side the old DIN-5 plugs. It’s still MIDI though). MIDI offered several channels of signals - 16 to be exact - and each channel could have several different signals embedded in it. Welcome to the future! Polyphony, isolated channels, separate control signals to control modulations and such - all through a single 5 wire cable. MIDI was quickly incorporated in the first DAWs, which allowed people to arrange much more complex pieces than previously possible using the oldskool analog sequencers which were often limited to 8, 16, or 32 steps that would repeat. For old CV equipment, MIDI to CV converters where introduced. These converters would simply take a digital MIDI signal and convert it to a control voltage which could then be patched into older equipment. </p>
+<p>So let’s move onto the present. Currently MIDI is still the dominant standard for any audio equipment interconnectivity. It’s used in anything from keyboards, DAW controllers, high-end system 500 modules, synthesizers, and even lighting systems. Still, the old control voltage has its place. There’s currently somewhat of an analog revolution going on, in large part due to Korg’s success with small, affordable devices like the monotron, monotribe, and volca systems. Most of these devices support both MIDI and control voltage (or can be modified to support it). There’s also a very dedicated and very <a href="http://www.muffwiggler.com/" target="_blank" rel="external">friendly community</a> of modular synth heads building and using some very impressive setups - all built around analog circuits and controlled by control voltage. The most popular format right now is the Eurorack format, first introduced with the Doepfer A-100 modular system back in ‘95. </p>
+<p><img src="/images/eurorack.png" alt="Eurorack System"><br><em>A modern eurorack system. Picture stolen from <a href="http://synthopia.com" target="_blank" rel="external">synthopia.com</a>.</em></p>
+<p>Well, that pretty much sums it up. A brief history on automation and control of synthesizers. </p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/synthesizers/">synthesizers</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/CV/">CV</a>, <a href="/tags/synthesizer-history/">synthesizer history</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/midi_and_cv_a_brief_history/&title=《MIDI and CV - A Brief History Lesson》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/midi_and_cv_a_brief_history/&title=MIDI and CV - A Brief History Lesson'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/midi_and_cv_a_brief_history/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Setting up Visual Studio Code with Make</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
+<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
+<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
+<pre><code>{
+    &quot;version&quot;: &quot;0.0.1&quot;,
+    &quot;command&quot;: &quot;make&quot;,
+    &quot;tasks&quot;: [
+      {
+        &quot;taskName&quot;: &quot;rebuild&quot;,
+        &quot;isBuildCommand&quot;: true,
+        &quot;problemMatcher&quot;: {
+            &quot;owner&quot;: &quot;cpp&quot;,
+            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
+            &quot;pattern&quot;: {
+                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
+                &quot;file&quot;: 1,
+                &quot;line&quot;: 2,
+                &quot;column&quot;: 3,
+                &quot;severity&quot;: 4,
+                &quot;message&quot;: 5
+            }
+        }
+      },
+      {
+        &quot;taskName&quot;: &quot;run&quot;,
+        &quot;isTestCommand&quot;: true,
+        &quot;showOutput&quot;: &quot;always&quot;
+      }
+  ]
+}
+</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
+<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  
+    <form action="//google.com/search" method="get" accept-charset="utf-8">
+      <input type="search" name="q" results="0" placeholder="Suche">
+      <input type="hidden" name="q" value="site:tinkerer.xyz">
+    </form>
+  
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Neueste Artikel</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2016/03/06/why-no-loops-in-js/">Why you shouldn&#39;t use for-loops in JavaScript, and how to avoid them</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/hello-world/">Hello World</a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Kategorien</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/electronics/arduino/">arduino</a><small>2</small></li>
+  
+    <li><a href="/categories/electronics/">electronics</a><small>3</small></li>
+  
+    <li><a href="/categories/programming/gamedev/">gamedev</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/howto/">howto</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/javascript/">javascript</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/">programming</a><small>3</small></li>
+  
+    <li><a href="/categories/electronics/arduino/projects/">projects</a><small>0</small></li>
+  
+    <li><a href="/categories/synthesizers/">synthesizers</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <div class="entry">
+    
+      <span><a href="/tags/7-Segment-Display/">7 Segment Display<small>1</small></a></span>
+    
+      <span><a href="/tags/74HC595/">74HC595<small>1</small></a></span>
+    
+      <span><a href="/tags/CV/">CV<small>1</small></a></span>
+    
+      <span><a href="/tags/MCP4922/">MCP4922<small>0</small></a></span>
+    
+      <span><a href="/tags/MIDI/">MIDI<small>2</small></a></span>
+    
+      <span><a href="/tags/PCB/">PCB<small>2</small></a></span>
+    
+      <span><a href="/tags/Shift-Register/">Shift Register<small>1</small></a></span>
+    
+      <span><a href="/tags/attiny/">attiny<small>1</small></a></span>
+    
+      <span><a href="/tags/synthesizer-history/">synthesizer history<small>1</small></a></span>
+    
+  </div>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div id="foot-nav">
+  <ul class="social">
+    
+      <li><a class="github" href="https://github.com/cvasseng" title="github">github</a></li>
+    
+      <li><a class="rss" href="/atom.xml" title="rss">rss</a></li>
+    
+  </ul>
+</div>
+<div>
+  
+    &copy; 2016 chris
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+  <script type="text/javascript">
+    var disqus_shortname = 'tinkererxyz';
+
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+  </script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<script type="text/javascript">
+  function navbar() {
+    var top = $('#nav-top').innerHeight();
+    $('#header').css('min-height', top);
+  }
+  navbar();
+  $(window).resize(navbar);
+</script>
+<div id="totop" class="footer-btn">
+  <a title="Zurück Nach Oben"><img src="/img/scrollup.png"/></a>
+</div>
+
+<script type="text/javascript">
+  $(function(){ 
+	// When to show the scroll link
+	// higher number = scroll link appears further down the page   
+	var upperLimit = 800;
+	
+	// Our scroll link element
+	var scrollElem = $('#totop');
+   
+	// Scroll to top speed
+	var scrollSpeed = 500;
+   
+	// Show and hide the scroll to top link based on scroll position   
+	scrollElem.hide();
+	$(window).scroll(function () {            
+		var scrollTop = $(document).scrollTop();       
+		if ( scrollTop > upperLimit ) {
+		  $(scrollElem).stop().fadeTo(300, 1); // fade back in
+		  $(scrollElem).animate({bottom: "50px"}, { queue: false, duration: 10 });
+		} else {
+		  $(scrollElem).stop().fadeTo(300, 0); // fade out
+	      $(scrollElem).animate({bottom: "-200px"}, { queue: false, duration: 10 });
+			
+		}
+	});
+
+	// Scroll to top animation on click
+	$(scrollElem).click(function(){
+	  $('html, body').animate({scrollTop:0}, scrollSpeed);
+	  $(scrollElem).animate({bottom: "-200px"}, { queue: false, duration: 10 });
+	  return false;
+	});
+  });
+</script>
+
+</body>
+</html>

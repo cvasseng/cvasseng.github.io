@@ -1,0 +1,403 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>MIDI | tinkerer.xyz</title>
+  <meta name="author" content="chris">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="tinkerer.xyz"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.ico" rel="shortcut icon">
+  <link rel="alternate" href="/atom.xml" title="tinkerer.xyz" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+  
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-55610135-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div id="nav-top">
+  <div class="alignleft main-title">
+    <h1>tinkerer.xyz</h1>
+    <h2></h2>
+  </div>
+  <nav id="main-nav" class="alignright">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+  <div class="clearfix"></div>
+</div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title tag">MIDI</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/adding-midi-to-monotribe/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>I got the Monotribe a few years ago, when it was brand new. I hadn’t used it much, mostly because it seemed somewhat limited as an actual musical instrument. It is however, very simple to add MIDI capabilities to it and I finally got around to it.</p>
+<p>So let’s take a look.</p>
+<p><img src="images/monotribe_midi.jpg" alt="Monotribe MIDI"></p>
+<p>This is where you can hook up a midi input. I recommend using the connector on the other side of the board instead, but I was lazy and didn’t have the right kind laying around so I just soldered the wires directly to the existing pads. The red one is VCC, the black one GND, and the yellow one the RX input.</p>
+<p>Here’s the circuit I used for decoupling the input from the monotribe circuit board:</p>
+<p><img src="images/midi_in_circuit.png" alt="MIDI input"></p>
+<p>I also did a quick layout for it:</p>
+<p><img src="images/midi_in.png" alt="MIDI input"></p>
+<p>..which got turned into this by the fine folks at <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a> (I have several other uses for this board too, so figured I’d get a proper one made):</p>
+<p><img src="images/midi_in_board.jpg" alt="MIDI in board"></p>
+<p><img src="images/midi_in_board_populated.jpg" alt="MIDI in board populated"></p>
+<p>I of course managed to mess up the silkscreen on the outputs (reads TX instead of RX plus messy positioning), but I have fixed it in the below files. One minor issue though - the solder pads for the resistors ended up being really frickin’ small. They were easy enough to solder though so I haven’t changed the package (it’s a 207/12 IIRC).</p>
+<p>And yes - I was totally too lazy to file away the panel leftovers on the board before populating it. :p It works at least.</p>
+<p><a href="files/monotribemidi.sch">Eagle schematics</a><br><a href="files/monotribemidi.brd">Eagle PCB layout</a></p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/electronics/">electronics</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/PCB/">PCB</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=《Adding MIDI to a monotribe》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=Adding MIDI to a monotribe'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/midi_and_cv_a_brief_history/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/midi_and_cv_a_brief_history/">MIDI and CV - A Brief History Lesson</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>A long time ago, in a country not so far away, Robert Moog invented one of the first synthesizers - the Moog. As part of his design, he came up with several circuits that could be controlled by an external signal. This signal could come from a keyboard, or it could be produced by another circuit. By patching together several of these modules with this signal - called control voltage (or CV for short) - a complex signal chain was created, producing delicious, analog sounds. </p>
+<p>CV came to be the standard across most manufactures of synthesizers at the time. One of the uses for CV is to transmit pitch information, which of course is crucial when it comes to making sounds. Most manufacturers used a pitch control system called V/Oct (volts per octave) - though some (mainly Korg and Yamaha synths) used a system called Hz/V (Hertz per volt). In a V/Oct pitch control system 0V represents C0, 1V represents C1 and so on. The other notes are spread linearly between the whole numbers, so e.g. C#0 is 0.0833V, D0 is 0.1666V, and B is 0.9166V. In a Hz/V system an octave is represented by doubling the voltage. So C1 is 1V, C2 is 2V, C3 is 4V, C4 is 8V and so on. For modern modular systems V/Oct is by far the dominant one. </p>
+<p><img src="/images/robert_moog.png" alt="Robert Moog"><br><em>Robert Moog posing with some of his Moog synthesizers</em></p>
+<p>CV based systems are extremely flexible. In a modular synth anything can be connected to everything. Sure, sometimes the result would be silence, other times unbearable chaos, but if you wanted to control a filter modulation or a vibrato based on a keyboard, all you had to do was use a patch cable! One major limitation of a control voltage system is that it can only carry one signal at the time. It’s simplicity is what makes it powerful, but also what makes it less tidy than modern standards.</p>
+<p>In addition to the pitch system, a second control voltage was used; called CV/Gate or CV/Trigger. This signal was a simple on/off system, which was used to turn oscillators or other voltage controlled circuits on or off. So in other words - the pitch control voltage was a constant thing, and the gate/trigger signal dictated whether or not the circuit was active or not. Keyboards would have both a pitch voltage and a trigger/gate voltage. The trigger/gate would be activated when a note was pressed down, and deactivated when it was released. The signal itself was said to be off if the voltage was 0 - on if the voltage was whatever the system ran on.</p>
+<p>Back in 1983 digital circuits were becoming increasingly popular, and digital synthesizers started emerging. A replacement for the “obsolete” (in my opinion superior!) control voltage system was deemed necessary to have a more powerful (and standardized) interconnectivity protocol. This replacement was called MIDI, and is still the standard for connecting various pieces of audio equipment (though nowadays it’s common to use USB or even ethernet along side the old DIN-5 plugs. It’s still MIDI though). MIDI offered several channels of signals - 16 to be exact - and each channel could have several different signals embedded in it. Welcome to the future! Polyphony, isolated channels, separate control signals to control modulations and such - all through a single 5 wire cable. MIDI was quickly incorporated in the first DAWs, which allowed people to arrange much more complex pieces than previously possible using the oldskool analog sequencers which were often limited to 8, 16, or 32 steps that would repeat. For old CV equipment, MIDI to CV converters where introduced. These converters would simply take a digital MIDI signal and convert it to a control voltage which could then be patched into older equipment. </p>
+<p>So let’s move onto the present. Currently MIDI is still the dominant standard for any audio equipment interconnectivity. It’s used in anything from keyboards, DAW controllers, high-end system 500 modules, synthesizers, and even lighting systems. Still, the old control voltage has its place. There’s currently somewhat of an analog revolution going on, in large part due to Korg’s success with small, affordable devices like the monotron, monotribe, and volca systems. Most of these devices support both MIDI and control voltage (or can be modified to support it). There’s also a very dedicated and very <a href="http://www.muffwiggler.com/" target="_blank" rel="external">friendly community</a> of modular synth heads building and using some very impressive setups - all built around analog circuits and controlled by control voltage. The most popular format right now is the Eurorack format, first introduced with the Doepfer A-100 modular system back in ‘95. </p>
+<p><img src="/images/eurorack.png" alt="Eurorack System"><br><em>A modern eurorack system. Picture stolen from <a href="http://synthopia.com" target="_blank" rel="external">synthopia.com</a>.</em></p>
+<p>Well, that pretty much sums it up. A brief history on automation and control of synthesizers. </p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/synthesizers/">synthesizers</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/CV/">CV</a>, <a href="/tags/synthesizer-history/">synthesizer history</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/midi_and_cv_a_brief_history/&title=《MIDI and CV - A Brief History Lesson》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/midi_and_cv_a_brief_history/&title=MIDI and CV - A Brief History Lesson'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/midi_and_cv_a_brief_history/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  
+    <form action="//google.com/search" method="get" accept-charset="utf-8">
+      <input type="search" name="q" results="0" placeholder="Suche">
+      <input type="hidden" name="q" value="site:tinkerer.xyz">
+    </form>
+  
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Neueste Artikel</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2016/03/06/why-no-loops-in-js/">Why you shouldn&#39;t use for-loops in JavaScript, and how to avoid them</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/hello-world/">Hello World</a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Kategorien</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/electronics/arduino/">arduino</a><small>2</small></li>
+  
+    <li><a href="/categories/electronics/">electronics</a><small>3</small></li>
+  
+    <li><a href="/categories/programming/gamedev/">gamedev</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/howto/">howto</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/javascript/">javascript</a><small>1</small></li>
+  
+    <li><a href="/categories/programming/">programming</a><small>3</small></li>
+  
+    <li><a href="/categories/electronics/arduino/projects/">projects</a><small>0</small></li>
+  
+    <li><a href="/categories/synthesizers/">synthesizers</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <div class="entry">
+    
+      <span><a href="/tags/7-Segment-Display/">7 Segment Display<small>1</small></a></span>
+    
+      <span><a href="/tags/74HC595/">74HC595<small>1</small></a></span>
+    
+      <span><a href="/tags/CV/">CV<small>1</small></a></span>
+    
+      <span><a href="/tags/MCP4922/">MCP4922<small>0</small></a></span>
+    
+      <span><a href="/tags/MIDI/">MIDI<small>2</small></a></span>
+    
+      <span><a href="/tags/PCB/">PCB<small>2</small></a></span>
+    
+      <span><a href="/tags/Shift-Register/">Shift Register<small>1</small></a></span>
+    
+      <span><a href="/tags/attiny/">attiny<small>1</small></a></span>
+    
+      <span><a href="/tags/synthesizer-history/">synthesizer history<small>1</small></a></span>
+    
+  </div>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div id="foot-nav">
+  <ul class="social">
+    
+      <li><a class="github" href="https://github.com/cvasseng" title="github">github</a></li>
+    
+      <li><a class="rss" href="/atom.xml" title="rss">rss</a></li>
+    
+  </ul>
+</div>
+<div>
+  
+    &copy; 2016 chris
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+  <script type="text/javascript">
+    var disqus_shortname = 'tinkererxyz';
+
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+  </script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<script type="text/javascript">
+  function navbar() {
+    var top = $('#nav-top').innerHeight();
+    $('#header').css('min-height', top);
+  }
+  navbar();
+  $(window).resize(navbar);
+</script>
+<div id="totop" class="footer-btn">
+  <a title="Zurück Nach Oben"><img src="/img/scrollup.png"/></a>
+</div>
+
+<script type="text/javascript">
+  $(function(){ 
+	// When to show the scroll link
+	// higher number = scroll link appears further down the page   
+	var upperLimit = 800;
+	
+	// Our scroll link element
+	var scrollElem = $('#totop');
+   
+	// Scroll to top speed
+	var scrollSpeed = 500;
+   
+	// Show and hide the scroll to top link based on scroll position   
+	scrollElem.hide();
+	$(window).scroll(function () {            
+		var scrollTop = $(document).scrollTop();       
+		if ( scrollTop > upperLimit ) {
+		  $(scrollElem).stop().fadeTo(300, 1); // fade back in
+		  $(scrollElem).animate({bottom: "50px"}, { queue: false, duration: 10 });
+		} else {
+		  $(scrollElem).stop().fadeTo(300, 0); // fade out
+	      $(scrollElem).animate({bottom: "-200px"}, { queue: false, duration: 10 });
+			
+		}
+	});
+
+	// Scroll to top animation on click
+	$(scrollElem).click(function(){
+	  $('html, body').animate({scrollTop:0}, scrollSpeed);
+	  $(scrollElem).animate({bottom: "-200px"}, { queue: false, duration: 10 });
+	  return false;
+	});
+  });
+</script>
+
+</body>
+</html>
