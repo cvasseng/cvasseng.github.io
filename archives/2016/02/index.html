@@ -71,6 +71,145 @@
       
       
         <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/adding-midi-to-monotribe/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>I got the Monotribe a few years ago, when it was brand new. I hadn’t used it much, mostly because it seemed somewhat limited as an actual musical instrument. It is however, very simple to add MIDI capabilities to it and I finally got around to it.</p>
+<p>So let’s take a look.</p>
+<p><img src="images/monotribe_midi.jpg" alt="Monotribe MIDI"></p>
+<p>This is where you can hook up a midi input. I recommend using the connector on the other side of the board instead, but I was lazy and didn’t have the right kind laying around so I just soldered the wires directly to the existing pads. The red one is VCC, the black one GND, and the yellow one the RX input.</p>
+<p>Here’s the circuit I used for decoupling the input from the monotribe circuit board:</p>
+<p><img src="images/midi_in_circuit.png" alt="MIDI input"></p>
+<p>I also did a quick layout for it:</p>
+<p><img src="images/midi_in.png" alt="MIDI input"></p>
+<p>..which got turned into this by the fine folks at <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a> (I have several other uses for this board too, so figured I’d get a proper one made):</p>
+<p><img src="images/midi_in_board.jpg" alt="MIDI in board"></p>
+<p><img src="images/midi_in_board_populated.jpg" alt="MIDI in board populated"></p>
+<p>I of course managed to mess up the silkscreen on the outputs (reads TX instead of RX plus messy positioning), but I have fixed it in the below files. One minor issue though - the solder pads for the resistors ended up being really frickin’ small. They were easy enough to solder though so I haven’t changed the package (it’s a 207/12 IIRC).</p>
+<p>And yes - I was totally too lazy to file away the panel leftovers on the board before populating it. :p It works at least.</p>
+<p><a href="files/monotribemidi.sch">Eagle schematics</a><br><a href="files/monotribemidi.brd">Eagle PCB layout</a></p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/electronics/">electronics</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/PCB/">PCB</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=《Adding MIDI to a monotribe》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=Adding MIDI to a monotribe'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/hello-world/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/hello-world/">Hello World</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+
+      
+    </div>
+    <footer>
+      
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/hello-world/&title=《Hello World》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/hello-world/&title=Hello World'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/hello-world/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
         <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/7_seg_arduino/">Feb 18 2016</a></time>
       
       
@@ -182,83 +321,6 @@
       
       
         <div class="icon"></div>
-        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/adding-midi-to-monotribe/">Feb 18 2016</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a></h1>
-  
-
-      <div style="text-align:right;font-style:italic;">by chris</div>
-      
-    </header>
-    <div class="entry">
-      
-        
-        <p>I got the Monotribe a few years ago, when it was brand new. I hadn’t used it much, mostly because it seemed somewhat limited as an actual musical instrument. It is however, very simple to add MIDI capabilities to it and I finally got around to it.</p>
-<p>So let’s take a look.</p>
-<p><img src="images/monotribe_midi.jpg" alt="Monotribe MIDI"></p>
-<p>This is where you can hook up a midi input. I recommend using the connector on the other side of the board instead, but I was lazy and didn’t have the right kind laying around so I just soldered the wires directly to the existing pads. The red one is VCC, the black one GND, and the yellow one the RX input.</p>
-<p>Here’s the circuit I used for decoupling the input from the monotribe circuit board:</p>
-<p><img src="images/midi_in_circuit.png" alt="MIDI input"></p>
-<p>I also did a quick layout for it:</p>
-<p><img src="images/midi_in.png" alt="MIDI input"></p>
-<p>..which got turned into this by the fine folks at <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a> (I have several other uses for this board too, so figured I’d get a proper one made):</p>
-<p><img src="images/midi_in_board.jpg" alt="MIDI in board"></p>
-<p><img src="images/midi_in_board_populated.jpg" alt="MIDI in board populated"></p>
-<p>I of course managed to mess up the silkscreen on the outputs (reads TX instead of RX plus messy positioning), but I have fixed it in the below files. One minor issue though - the solder pads for the resistors ended up being really frickin’ small. They were easy enough to solder though so I haven’t changed the package (it’s a 207/12 IIRC).</p>
-<p>And yes - I was totally too lazy to file away the panel leftovers on the board before populating it. :p It works at least.</p>
-<p><a href="files/monotribemidi.sch">Eagle schematics</a><br><a href="files/monotribemidi.brd">Eagle PCB layout</a></p>
-
-      
-    </div>
-    <footer>
-      
-  
-  <div class="categories">
-    <a href="/categories/electronics/">electronics</a>
-  </div>
-
-      
-  
-  <div class="tags">
-    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/PCB/">PCB</a>
-  </div>
-
-      
-        
-          <div class="alignright share-box">
-  
-    
-      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=《Adding MIDI to a monotribe》" title="google"></a>
-    
-  
-  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=Adding MIDI to a monotribe'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
-</div>
-        
-
-        <div class="alignright share-box">
-          <a href="http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/#disqus_thread" class="">Comments</a>
-        </div>
-
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-      
-        <div class="icon"></div>
         <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/attiny_and_arduino/">Feb 18 2016</a></time>
       
       
@@ -330,11 +392,11 @@
       
       
         <div class="icon"></div>
-        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/hello-world/">Feb 18 2016</a></time>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
       
       
   
-    <h1 class="title"><a href="/2016/02/18/hello-world/">Hello World</a></h1>
+    <h1 class="title"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Setting up Visual Studio Code with Make</a></h1>
   
 
       <div style="text-align:right;font-style:italic;">by chris</div>
@@ -343,35 +405,63 @@
     <div class="entry">
       
         
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
+<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
+<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
+<pre><code>{
+    &quot;version&quot;: &quot;0.0.1&quot;,
+    &quot;command&quot;: &quot;make&quot;,
+    &quot;tasks&quot;: [
+      {
+        &quot;taskName&quot;: &quot;rebuild&quot;,
+        &quot;isBuildCommand&quot;: true,
+        &quot;problemMatcher&quot;: {
+            &quot;owner&quot;: &quot;cpp&quot;,
+            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
+            &quot;pattern&quot;: {
+                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
+                &quot;file&quot;: 1,
+                &quot;line&quot;: 2,
+                &quot;column&quot;: 3,
+                &quot;severity&quot;: 4,
+                &quot;message&quot;: 5
+            }
+        }
+      },
+      {
+        &quot;taskName&quot;: &quot;run&quot;,
+        &quot;isTestCommand&quot;: true,
+        &quot;showOutput&quot;: &quot;always&quot;
+      }
+  ]
+}
+</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
+<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
 
       
     </div>
     <footer>
       
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
+  </div>
+
       
       
         
           <div class="alignright share-box">
   
     
-      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/hello-world/&title=《Hello World》" title="google"></a>
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
     
   
-  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/hello-world/&title=Hello World'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
 </div>
         
 
         <div class="alignright share-box">
-          <a href="http://tinkerer.xyz/2016/02/18/hello-world/#disqus_thread" class="">Comments</a>
+          <a href="http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/#disqus_thread" class="">Comments</a>
         </div>
 
       
@@ -554,96 +644,6 @@ end
 
 
   
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-      
-        <div class="icon"></div>
-        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Setting up Visual Studio Code with Make</a></h1>
-  
-
-      <div style="text-align:right;font-style:italic;">by chris</div>
-      
-    </header>
-    <div class="entry">
-      
-        
-        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
-<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
-<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
-<pre><code>{
-    &quot;version&quot;: &quot;0.0.1&quot;,
-    &quot;command&quot;: &quot;make&quot;,
-    &quot;tasks&quot;: [
-      {
-        &quot;taskName&quot;: &quot;rebuild&quot;,
-        &quot;isBuildCommand&quot;: true,
-        &quot;problemMatcher&quot;: {
-            &quot;owner&quot;: &quot;cpp&quot;,
-            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
-            &quot;pattern&quot;: {
-                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
-                &quot;file&quot;: 1,
-                &quot;line&quot;: 2,
-                &quot;column&quot;: 3,
-                &quot;severity&quot;: 4,
-                &quot;message&quot;: 5
-            }
-        }
-      },
-      {
-        &quot;taskName&quot;: &quot;run&quot;,
-        &quot;isTestCommand&quot;: true,
-        &quot;showOutput&quot;: &quot;always&quot;
-      }
-  ]
-}
-</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
-<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
-
-      
-    </div>
-    <footer>
-      
-  
-  <div class="categories">
-    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
-  </div>
-
-      
-      
-        
-          <div class="alignright share-box">
-  
-    
-      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
-    
-  
-  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
-</div>
-        
-
-        <div class="alignright share-box">
-          <a href="http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/#disqus_thread" class="">Comments</a>
-        </div>
-
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  
 
   <nav id="pagination">
   
@@ -671,19 +671,19 @@ end
       </li>
     
       <li>
-        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
-      </li>
-    
-      <li>
         <a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a>
       </li>
     
       <li>
-        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
+        <a href="/2016/02/18/hello-world/">Hello World</a>
       </li>
     
       <li>
-        <a href="/2016/02/18/hello-world/">Hello World</a>
+        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
       </li>
     
   </ul>

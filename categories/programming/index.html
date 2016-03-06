@@ -378,6 +378,96 @@ forRange(99, function (i) {
       
       
         <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Setting up Visual Studio Code with Make</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
+<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
+<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
+<pre><code>{
+    &quot;version&quot;: &quot;0.0.1&quot;,
+    &quot;command&quot;: &quot;make&quot;,
+    &quot;tasks&quot;: [
+      {
+        &quot;taskName&quot;: &quot;rebuild&quot;,
+        &quot;isBuildCommand&quot;: true,
+        &quot;problemMatcher&quot;: {
+            &quot;owner&quot;: &quot;cpp&quot;,
+            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
+            &quot;pattern&quot;: {
+                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
+                &quot;file&quot;: 1,
+                &quot;line&quot;: 2,
+                &quot;column&quot;: 3,
+                &quot;severity&quot;: 4,
+                &quot;message&quot;: 5
+            }
+        }
+      },
+      {
+        &quot;taskName&quot;: &quot;run&quot;,
+        &quot;isTestCommand&quot;: true,
+        &quot;showOutput&quot;: &quot;always&quot;
+      }
+  ]
+}
+</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
+<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
+  </div>
+
+      
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
         <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/help-accidental-compiler/">Feb 18 2016</a></time>
       
       
@@ -468,96 +558,6 @@ end
 
 
   
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-      
-        <div class="icon"></div>
-        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Setting up Visual Studio Code with Make</a></h1>
-  
-
-      <div style="text-align:right;font-style:italic;">by chris</div>
-      
-    </header>
-    <div class="entry">
-      
-        
-        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
-<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
-<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
-<pre><code>{
-    &quot;version&quot;: &quot;0.0.1&quot;,
-    &quot;command&quot;: &quot;make&quot;,
-    &quot;tasks&quot;: [
-      {
-        &quot;taskName&quot;: &quot;rebuild&quot;,
-        &quot;isBuildCommand&quot;: true,
-        &quot;problemMatcher&quot;: {
-            &quot;owner&quot;: &quot;cpp&quot;,
-            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
-            &quot;pattern&quot;: {
-                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
-                &quot;file&quot;: 1,
-                &quot;line&quot;: 2,
-                &quot;column&quot;: 3,
-                &quot;severity&quot;: 4,
-                &quot;message&quot;: 5
-            }
-        }
-      },
-      {
-        &quot;taskName&quot;: &quot;run&quot;,
-        &quot;isTestCommand&quot;: true,
-        &quot;showOutput&quot;: &quot;always&quot;
-      }
-  ]
-}
-</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
-<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
-
-      
-    </div>
-    <footer>
-      
-  
-  <div class="categories">
-    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
-  </div>
-
-      
-      
-        
-          <div class="alignright share-box">
-  
-    
-      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
-    
-  
-  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
-</div>
-        
-
-        <div class="alignright share-box">
-          <a href="http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/#disqus_thread" class="">Comments</a>
-        </div>
-
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  
 
   <nav id="pagination">
   
@@ -585,19 +585,19 @@ end
       </li>
     
       <li>
-        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
-      </li>
-    
-      <li>
         <a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a>
       </li>
     
       <li>
-        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
+        <a href="/2016/02/18/hello-world/">Hello World</a>
       </li>
     
       <li>
-        <a href="/2016/02/18/hello-world/">Hello World</a>
+        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
       </li>
     
   </ul>

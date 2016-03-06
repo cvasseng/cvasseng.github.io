@@ -3,15 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Setting up Visual Studio Code with Make | tinkerer.xyz</title>
+  <title>tinkerer.xyz</title>
   <meta name="author" content="chris">
   
-  <meta name="description" content="A couple of months ago, I switched from Sublime - which I had been using for quite some time - to Visual Studio Code.Most of my work-related coding is">
+  <meta name="description" content="html, body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            width: 100%;
+            height:100%;
+        }
+">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Setting up Visual Studio Code with Make"/>
+  
   <meta property="og:site_name" content="tinkerer.xyz"/>
 
   
@@ -61,18 +68,15 @@
   <div class="clearfix"></div>
 </div></header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="page">
   
   <div class="post-content">
     <header>
       
       
-        <div class="icon"></div>
-        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/visualstudiocode_and_makefiles/">Feb 18 2016</a></time>
-      
       
   
-    <h1 class="title">Setting up Visual Studio Code with Make</h1>
+    <h1 class="title"></h1>
   
 
       <div style="text-align:right;font-style:italic;">by chris</div>
@@ -83,57 +87,291 @@
         
           
         
-        <p>A couple of months ago, I switched from Sublime - which I had been using for quite some time - to <a href="https://code.visualstudio.com/" target="_blank" rel="external">Visual Studio Code</a>.<br>Most of my work-related coding is web-oriented these days, with lots of node.js, less, and html code.<br>The support for those in VSC is excellent. Node debugging for instance works right out of the box, and is tightly integrated with the editor. It has a few shortcomings (like missing hotkeys for selecting the current/next word, or jumping to the next word), but the benefits so far outweighs the drawbacks.</p>
-<p>For my own projects, I’m mostly coding in C/C++. I like to use the same editor for all my projects, and so I’ve ended up writing my C/C++ code in VSC as well. I tend to use makefiles, mostly because for smaller projects it’s quick to set up (at least when I only need it to work on my setup). Up until now I’ve been alt-tabbing to a console window to compile and run my projects. I then realized that there’s gotta be a better way, and sure enough; there is. VSC supports custom <a href="https://code.visualstudio.com/Docs/editor/tasks" target="_blank" rel="external">Tasks</a>, which can be used to run any shell command from within the editor. It can also be used to pattern match output of these commands, to e.g. highlight errors/warnings directly in the editor. </p>
-<p>Anyway - I adapted one of the task examples from the Visual Studio Code documentation to use make for building/testing. Maybe it’s useful for someone else also, so here it is:</p>
-<pre><code>{
-    &quot;version&quot;: &quot;0.0.1&quot;,
-    &quot;command&quot;: &quot;make&quot;,
-    &quot;tasks&quot;: [
-      {
-        &quot;taskName&quot;: &quot;rebuild&quot;,
-        &quot;isBuildCommand&quot;: true,
-        &quot;problemMatcher&quot;: {
-            &quot;owner&quot;: &quot;cpp&quot;,
-            &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;${workspaceRoot}&quot;],
-            &quot;pattern&quot;: {
-                &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error|notice):\\s+(.*)$&quot;,
-                &quot;file&quot;: 1,
-                &quot;line&quot;: 2,
-                &quot;column&quot;: 3,
-                &quot;severity&quot;: 4,
-                &quot;message&quot;: 5
-            }
-        }
-      },
-      {
-        &quot;taskName&quot;: &quot;run&quot;,
-        &quot;isTestCommand&quot;: true,
-        &quot;showOutput&quot;: &quot;always&quot;
-      }
-  ]
-}
-</code></pre><p>Put the above JSON in <code>.settings/</code> in your project directory. It’s set up so that the VSC build command (<code>cmd+shift+b</code> on OSX) runs <code>make rebuild</code>, and the VSC test command (<code>cmd+shift+t</code> on OSX) runs <code>make run</code>.<br>So just change <code>taskName</code> to whatever is appropriate for your makefiles, and you should be good to go.</p>
-<p>The task also contains a pattern matcher which will underline errors/warnings in your source files (if any) once you run the build task.</p>
+        <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
 
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,100,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Bad+Script|Patrick+Hand" rel="stylesheet" type="text/css">
+    
+    <script type="text/javascript" src="src/me.js"></script>
+    <script type="text/javascript" src="src/me.events.js"></script>
+    <script type="text/javascript" src="src/me.actor.js"></script>
+    <script type="text/javascript" src="src/me.tileset.js"></script>
+    <script type="text/javascript" src="src/me.player.js"></script>
+    <script type="text/javascript" src="src/me.projectile.js"></script>
+    <script type="text/javascript" src="src/me.sprite.js"></script>
+    <script type="text/javascript" src="src/me.map.js"></script>
+    <script type="text/javascript" src="src/me.trap.js"></script>
+    <script type="text/javascript" src="src/me.ai.js"></script>
+    <script type="text/javascript" src="src/me.dungen.js"></script>
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            width: 100%;
+            height:100%;
+        }
+        canvas {
+            background: #000;
+        }
+        .msg {
+            position: fixed;
+            top:20%;
+            width:100%;
+            pointer-events: none;
+            font-size: 32px;
+            color:#EEE;
+            text-align: center;
+            font-family: 'Bad Script', sans-serif;
+        }
+
+        .mask {
+            pointer-events: none;
+            position: fixed;
+            width:100%;
+            height:100%;
+            left:0px;
+            top:0px;
+            width:100%;
+            height:100%;
+            background: radial-gradient(circle at 50% 50% , rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 255) 70%);
+        }
+
+        .map {
+           
+            position:fixed;
+            left:0px;
+            top:0px;
+            width:100%;
+            height:100%;
+        }
+
+    </style>
+
+    <title>Magescape</title>
+</head>
+<body>
+  <div id="map" class="map"></div>
+  <div id="msg" class="msg"></div>
+  <div class="mask"></div>
+</body>
+
+<script>
+
+var tileset = me.Tileset(),
+    map = me.Map({
+
+    }, tileset),
+    actor = me.Actor(map, {
+        pos: {
+            x: 1,
+            y: 1
+        },
+        tileIndex: 155
+    }),
+
+    doBeam = false,
+    dungen = me.DungeonGen(map)
+;
+  
+document.getElementById('map').appendChild(map.canvas);
+
+tileset.on('Load', function () {
+    // map.data.set(0, 0, 1);
+     map.data.set(10, 5, 1);
+    // map.data.set(0, 1, 3);
+    // map.data.set(1, 1, 3);
+    actor.setPos(2, 2);
+    map.actors.addPlayer(actor);
+
+    // for (var i = 0; i < 9; i++) {
+    //     map.actors.add(me.AI(map, {
+    //         pos: {
+    //             x: Math.round(Math.random() * 15),
+    //             y: Math.round(Math.random() * 15)
+    //         }//,
+    //         //tileIndex: tileset.getTile(6)
+    //     }));        
+    // }
+
+    dungen.generate();
+    centerOnPlayer();
+    map.processTurn();
+});
+
+tileset.load('dungeon.png');
+
+function centerOnPlayer() {
+     var ws = {
+            x: document.body.offsetWidth,
+            y: document.body.offsetHeight
+        },
+        pp = {
+            x: actor.pos().x * map.properties.drawSize,
+            y: actor.pos().y * map.properties.drawSize
+        },
+        m = document.getElementById('map')
+    ;
+
+    //{x: 1423, y: 3204} Object {x: 0, y: 0} Object {x: 1472, y: 448}
+
+    m.style.left = -(pp.x - (ws.x / 2) ) + 'px';
+    m.style.top =  -(pp.y - (ws.y / 2) ) + 'px';
+
+}
+
+actor.on('Turn', centerOnPlayer);
+
+window.onresize = centerOnPlayer;
+
+function enableBeam() {
+    document.getElementById('msg').innerHTML = 'Choose direction by hovering adjacent tiles, fire with left mouse';
+    doBeam = true;
+    actor.dir.x = 0;
+    actor.dir.y = 0;
+}
+
+function disableBeam() {
+    document.getElementById('msg').innerHTML = '';
+    doBeam = false;
+}
+
+actor.on('Kill', function () {
+     document.getElementById('msg').innerHTML = '...and so ends the tale of Maginus Jellimakinus the Mage.<br/><br/>Your score: ???';
+});
+
+//Testing projectile aiming
+map.canvas.onmousemove = function (e) {
+    var m = document.getElementById('map'),
+        ox = parseInt(m.style.left),
+        oy = parseInt(m.style.top),
+        tx = Math.floor((e.clientX - ox) / map.properties.drawSize),
+        ty = Math.floor((e.clientY - oy) / map.properties.drawSize),
+        pos = {x: 0, y: 0}
+    ;
+
+    if (!doBeam) {
+        return;
+    }
+
+
+    pos.x = tx - actor.pos().x;
+    pos.y = ty - actor.pos().y;
+
+    if (pos.x > 1 || pos.y > 1 || pos.x < -1 || pos.y < -1) {
+        map.indicators.enable(false);
+        return false;
+    }
+
+    if (pos.x !== actor.dir.x || pos.y !== actor.dir.y) {        
+        //Should blit a line from actor.pos to tx,ty
+        map.indicators.enable(true);
+
+        map.indicators.draw({
+                x: actor.pos().x + 0.5,
+                y: actor.pos().y +   0.5
+        
+            }, 
+            {
+                x: tx + 0.5, 
+                y: ty + 0.5
+            }
+        );
+
+       actor.dir.x = pos.x;
+       actor.dir.y = pos.y;
+    } 
+
+
+    console.log(tx, ty);
+    console.log(pos);
+};
+
+map.canvas.onmousedown = function (e) {
+    if (!doBeam) {
+        return;
+    }
+
+    if (actor.dir.x === 0 && actor.dir.y === 0) {
+        disableBeam();
+        map.indicators.enable(false);
+        return;
+    }
+
+    var p = map.projectiles.fire({
+        pos: actor.pos(),
+        dir: {x: actor.dir.x, y: actor.dir.y},
+        speed: 2,
+        tileIndex: 121
+    }, actor);
+
+   p.on('Hit', function (other) {
+        var op = {x: other.pos().x, y: other.pos().y};
+        if (other.frozen() > 0) {
+            other.setPos(actor.pos());
+            actor.setPos(op);
+        } else {
+            other.freeze();                
+        }
+   });
+
+   disableBeam();
+   map.indicators.enable(false);
+   map.processTurn();
+}
+
+document.onkeydown = function (e) {
+    if (e.code === 'KeyW') {
+        actor.moveUp();
+        map.processTurn();
+        map.indicators.enable(false);
+        disableBeam();
+    } else if (e.code === 'KeyS') {
+        actor.moveDown();
+        map.processTurn();
+        map.indicators.enable(false);
+        disableBeam();
+    } else if (e.code === 'KeyD') {
+        actor.moveRight();
+        map.processTurn();
+        map.indicators.enable(false);
+        disableBeam();
+    } else if (e.code === 'KeyA') {
+        actor.moveLeft();
+        map.processTurn();
+        map.indicators.enable(false);
+        disableBeam();
+    } else if (e.code === 'KeyE') {
+       enableBeam();
+    } else if (e.code === 'KeyT') {
+        map.processTurn();
+    } else if (e.code === 'KeyQ') {
+        map.traps.add(actor);
+        map.processTurn();
+    }
+   //    console.log(e);
+};
+
+</script>
+
+</html>
       
     </div>
     <footer>
       
-  
-  <div class="categories">
-    <a href="/categories/programming/">programming</a>, <a href="/categories/programming/howto/">howto</a>
-  </div>
-
       
       
         <div class="alignright share-box">
   
     
-      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=《Setting up Visual Studio Code with Make》" title="google"></a>
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/files/index.html&title=《》" title="google"></a>
     
   
-  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/visualstudiocode_and_makefiles/&title=Setting up Visual Studio Code with Make'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/files/index.html&title='; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
 </div>
 
         

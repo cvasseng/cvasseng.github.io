@@ -71,6 +71,83 @@
       
       
         <div class="icon"></div>
+        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/adding-midi-to-monotribe/">Feb 18 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a></h1>
+  
+
+      <div style="text-align:right;font-style:italic;">by chris</div>
+      
+    </header>
+    <div class="entry">
+      
+        
+        <p>I got the Monotribe a few years ago, when it was brand new. I hadn’t used it much, mostly because it seemed somewhat limited as an actual musical instrument. It is however, very simple to add MIDI capabilities to it and I finally got around to it.</p>
+<p>So let’s take a look.</p>
+<p><img src="images/monotribe_midi.jpg" alt="Monotribe MIDI"></p>
+<p>This is where you can hook up a midi input. I recommend using the connector on the other side of the board instead, but I was lazy and didn’t have the right kind laying around so I just soldered the wires directly to the existing pads. The red one is VCC, the black one GND, and the yellow one the RX input.</p>
+<p>Here’s the circuit I used for decoupling the input from the monotribe circuit board:</p>
+<p><img src="images/midi_in_circuit.png" alt="MIDI input"></p>
+<p>I also did a quick layout for it:</p>
+<p><img src="images/midi_in.png" alt="MIDI input"></p>
+<p>..which got turned into this by the fine folks at <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a> (I have several other uses for this board too, so figured I’d get a proper one made):</p>
+<p><img src="images/midi_in_board.jpg" alt="MIDI in board"></p>
+<p><img src="images/midi_in_board_populated.jpg" alt="MIDI in board populated"></p>
+<p>I of course managed to mess up the silkscreen on the outputs (reads TX instead of RX plus messy positioning), but I have fixed it in the below files. One minor issue though - the solder pads for the resistors ended up being really frickin’ small. They were easy enough to solder though so I haven’t changed the package (it’s a 207/12 IIRC).</p>
+<p>And yes - I was totally too lazy to file away the panel leftovers on the board before populating it. :p It works at least.</p>
+<p><a href="files/monotribemidi.sch">Eagle schematics</a><br><a href="files/monotribemidi.brd">Eagle PCB layout</a></p>
+
+      
+    </div>
+    <footer>
+      
+  
+  <div class="categories">
+    <a href="/categories/electronics/">electronics</a>
+  </div>
+
+      
+  
+  <div class="tags">
+    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/PCB/">PCB</a>
+  </div>
+
+      
+        
+          <div class="alignright share-box">
+  
+    
+      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=《Adding MIDI to a monotribe》" title="google"></a>
+    
+  
+  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=Adding MIDI to a monotribe'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+        
+
+        <div class="alignright share-box">
+          <a href="http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/#disqus_thread" class="">Comments</a>
+        </div>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+      
+        <div class="icon"></div>
         <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/7_seg_arduino/">Feb 18 2016</a></time>
       
       
@@ -182,83 +259,6 @@
       
       
         <div class="icon"></div>
-        <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/adding-midi-to-monotribe/">Feb 18 2016</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a></h1>
-  
-
-      <div style="text-align:right;font-style:italic;">by chris</div>
-      
-    </header>
-    <div class="entry">
-      
-        
-        <p>I got the Monotribe a few years ago, when it was brand new. I hadn’t used it much, mostly because it seemed somewhat limited as an actual musical instrument. It is however, very simple to add MIDI capabilities to it and I finally got around to it.</p>
-<p>So let’s take a look.</p>
-<p><img src="images/monotribe_midi.jpg" alt="Monotribe MIDI"></p>
-<p>This is where you can hook up a midi input. I recommend using the connector on the other side of the board instead, but I was lazy and didn’t have the right kind laying around so I just soldered the wires directly to the existing pads. The red one is VCC, the black one GND, and the yellow one the RX input.</p>
-<p>Here’s the circuit I used for decoupling the input from the monotribe circuit board:</p>
-<p><img src="images/midi_in_circuit.png" alt="MIDI input"></p>
-<p>I also did a quick layout for it:</p>
-<p><img src="images/midi_in.png" alt="MIDI input"></p>
-<p>..which got turned into this by the fine folks at <a href="http://oshpark.com" target="_blank" rel="external">OSH Park</a> (I have several other uses for this board too, so figured I’d get a proper one made):</p>
-<p><img src="images/midi_in_board.jpg" alt="MIDI in board"></p>
-<p><img src="images/midi_in_board_populated.jpg" alt="MIDI in board populated"></p>
-<p>I of course managed to mess up the silkscreen on the outputs (reads TX instead of RX plus messy positioning), but I have fixed it in the below files. One minor issue though - the solder pads for the resistors ended up being really frickin’ small. They were easy enough to solder though so I haven’t changed the package (it’s a 207/12 IIRC).</p>
-<p>And yes - I was totally too lazy to file away the panel leftovers on the board before populating it. :p It works at least.</p>
-<p><a href="files/monotribemidi.sch">Eagle schematics</a><br><a href="files/monotribemidi.brd">Eagle PCB layout</a></p>
-
-      
-    </div>
-    <footer>
-      
-  
-  <div class="categories">
-    <a href="/categories/electronics/">electronics</a>
-  </div>
-
-      
-  
-  <div class="tags">
-    <a href="/tags/MIDI/">MIDI</a>, <a href="/tags/PCB/">PCB</a>
-  </div>
-
-      
-        
-          <div class="alignright share-box">
-  
-    
-      <a class="share-link share-google" href="https://plus.google.com/share?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=《Adding MIDI to a monotribe》" title="google"></a>
-    
-  
-  <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/&title=Adding MIDI to a monotribe'; return false"> <img src="//www.redditstatic.com/spreddit5.gif" alt="submit to reddit" border="0" /> </a>
-</div>
-        
-
-        <div class="alignright share-box">
-          <a href="http://tinkerer.xyz/2016/02/18/adding-midi-to-monotribe/#disqus_thread" class="">Comments</a>
-        </div>
-
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-      
-        <div class="icon"></div>
         <time datetime="2016-02-18T20:58:45.000Z"><a href="/2016/02/18/attiny_and_arduino/">Feb 18 2016</a></time>
       
       
@@ -350,19 +350,19 @@
       </li>
     
       <li>
-        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
-      </li>
-    
-      <li>
         <a href="/2016/02/18/adding-midi-to-monotribe/">Adding MIDI to a monotribe</a>
       </li>
     
       <li>
-        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
+        <a href="/2016/02/18/hello-world/">Hello World</a>
       </li>
     
       <li>
-        <a href="/2016/02/18/hello-world/">Hello World</a>
+        <a href="/2016/02/18/7_seg_arduino/">7 segment LEDs with Arduino and shift registers</a>
+      </li>
+    
+      <li>
+        <a href="/2016/02/18/attiny_and_arduino/">ATTiny25 and Arduino</a>
       </li>
     
   </ul>
