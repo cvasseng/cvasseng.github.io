@@ -127,7 +127,68 @@ me.DungeonGen = function (map, level) {
       hx = Math.floor((tx - fx) / 2);
 
       //Go right first, until we're halfway there
-      for (var i = -1; i <= hx="" +="" 2;="" i++)="" {="" map.data.set(fx="" i,="" fy="" ,="" placeholdera);="" 1,="" }="" now="" go="" the="" rest="" of="" way="" at="" ty="" for="" (var="" i="0;" <="hx" 1;="" from="" halfway="" x="" and="" up="" to="" -="" fy;="" if="" (map.data.get(fx="" hx,="" i)="" !="=" placeholdera)="" placeholderb);="" var="" c="map.canvas.getContext('2d');" c.strokestyle="#AA3333" ;="" c.beginpath();="" c.moveto(fx="" *="" map.properties.drawsize,="" map.properties.drawsize);="" c.lineto(tx="" c.closepath();="" c.stroke();="" function="" generate()="" ra="0," seed="1," casters="0," melee="0," i;="" (children.length="=" 2)="" children.foreach(function="" (child)="" child.generate();="" });="" connectchildren();="" else="" console.log('final="" room="" size',="" width,="" height);="" roomwidth="width" (math.round(math.random()="" (width="" 2)))="" roomheight="height" (height="" top="" bottom="" i++){="" map.data.set(px="" py="" walltile);="" py,="" 2);="" roomheight,="" left="" right="" map.data.set(px,="" roomwidth,="" (parent.children[1]="==" exports)="" connectchildren(parent.children[0],="" parent.children[1]);="" calculate="" area="" this="" will="" be="" used="" figure="" out="" how="" many="" enemies="" place="" roomheight;="" (ra=""> 60) {
+      for (var i = -1; i <= hx + 2; i++) {
+        map.data.set(fx + i, fy , placeHolderA);
+        map.data.set(fx + i, fy + 1, placeHolderA);
+      }
+
+      //Now go the rest of the way at ty
+      for (var i = 0; i <= hx + 1; i++) {
+        map.data.set(fx + hx + i, ty , placeHolderA);
+        map.data.set(fx + hx + i, ty + 1, placeHolderA);
+      }
+
+      //Now go from the halfway X and up to ty
+      for (var i = 0; i <= ty - fy; i++) {
+        if (map.data.get(fx + hx, fy + i) !== placeHolderA) {
+          map.data.set(fx + hx, fy + i, placeHolderB);          
+        }
+      }
+
+      //     var c = map.canvas.getContext('2d');
+      // c.strokeStyle = '#AA3333';
+      // c.beginPath();
+      // c.moveTo(fx * map.properties.drawSize, fy * map.properties.drawSize);
+      // c.lineTo(tx * map.properties.drawSize, ty * map.properties.drawSize);
+      // c.closePath();
+      // c.stroke();
+    }
+
+    function generate() {
+      var ra = 0, seed = 1, casters = 0, melee = 0, i;
+
+      if (children.length == 2) {
+        children.forEach(function (child) {
+          child.generate();
+        });
+        connectChildren();
+      } else {        
+       // console.log('Final room size', width, height);
+        roomWidth = width - (Math.round(Math.random() * (width / 2))) - 2;
+        roomHeight = height - (Math.round(Math.random() * (height / 2))) - 2;
+
+        //Top + bottom
+        for (var i = 0; i <= roomWidth; i++){
+          map.data.set(px + i, py - 1, wallTile);
+          map.data.set(px + i, py, 2);
+          map.data.set(px + i, py + roomHeight, wallTile);
+          map.data.set(px + i, py + roomHeight + 1, 2);
+        }
+
+        //Left + right 
+        for (var i = 0; i <= roomHeight; i++){
+          map.data.set(px, py + i, wallTile);
+          map.data.set(px + roomWidth, py + i, wallTile);
+        }
+
+        if (parent.children[1] === exports) {
+          connectChildren(parent.children[0], parent.children[1]);          
+        }
+
+        //Calculate area of room - this will be used to figure out how many enemies to place
+        ra = roomWidth * roomHeight;
+
+        if (ra > 60) {
           seed += 4;
         } else if (ra > 50) {
           seed += 3;
@@ -167,4 +228,149 @@ me.DungeonGen = function (map, level) {
         }
 
         //5% chance of spawning a real bastard
-        if (Math.random() </=>
+        if (Math.random() <= 0.05) {
+          map.actors.add(me.AI(map, {
+            pos: {
+              x: px + random(1, roomWidth - 1),
+              y: py + random(1, roomHeight - 1)
+            },
+            type: 'mixed'
+          }));
+        }
+
+      }
+    }
+
+    function fillRoom(t) {
+      if (children.length === 0) {
+        for (var y = 1; y < roomHeight ; y++) {
+          for (var x = 1; x < roomWidth ; x++) {
+            map.data.set(px + x, py + y, t ? floorTile : 10);
+          }
+        }
+      }
+    }
+
+    function fillRooms(t) {
+      children.forEach(function (child) {
+        child.fillRooms(t);
+      });
+      fillRoom(t);
+    }
+
+    function isWall(index) {
+      return index != 3 && index != placeHolderA && index != placeHolderB;
+
+      // var res = false;
+      // wallTile.some(function (w) {
+      //   if (index === w) {
+      //     res = true;
+      //     return true;
+      //   }
+      // });
+
+      // return res;
+    }
+
+    function createWalls() {
+      var t, bc;
+
+      for (var y = 0; y < map.properties.width; y++) {
+        for (var x = 0; x < map.properties.height; x++) {
+          var t = map.data.get(x, y);
+
+          if (t === placeHolderA || t === placeHolderB) {
+            //Fill up and down if they're 0
+            if (isWall(map.data.get(x, y + 1))) {
+              map.data.set(x, y + 1, wallTile);
+             // map.data.set(x, y + 2, 2);
+            }
+
+            if (isWall(map.data.get(x, y - 1))) {
+              map.data.set(x, y - 1, wallTile);
+              //map.data.set(x, y - 1, 2);
+            }
+
+            if (isWall(map.data.get(x + 1, y))) {
+              map.data.set(x + 1, y, wallTile);
+            }
+
+            if (isWall(map.data.get(x - 1, y))) {
+              map.data.set(x - 1, y, wallTile);
+            }
+          } 
+        }
+      }
+
+      //And again..
+      for (var y = 0; y < map.properties.width; y++) {
+        for (var x = 0; x < map.properties.height; x++) {
+          var t = map.data.get(x, y);
+
+          if (t === placeHolderA || t === placeHolderB) {
+            map.data.set(x, y, floorTile);
+          } 
+        }
+      }
+
+      fillRooms(true);
+
+      map.properties.enableDrawing = true;
+
+      for (var y = 0; y < map.properties.width; y++) {
+        for (var x = 0; x < map.properties.height; x++) {
+          bc = 0;
+
+          t = map.data.get(x, y);
+
+          //If there are 2 blanks and 2 walls adjacent, set t to 1
+          
+
+          map.data.set(x, y, t);
+          //If this is a wall, and there's ground below, add shadow
+          if (t === 1 && (map.data.get(x, y + 1) === 0 || map.data.get(x, y + 1) === 4)) {
+            map.data.set(x, y + 1, 2);
+          }
+        }
+      }
+    }
+
+    function decorate(allowed) {
+
+    }
+
+    exports = {
+      decorate: decorate,
+      createWalls: createWalls,
+      splitType: splitType,
+      px: px,
+      py: py,
+      fillRooms: fillRooms,
+      children: children,      
+      generate: generate,
+      subdivide: subdivide,
+      getRoomFromChildren: getRoomFromChildren,
+      roomWidth: function () { return roomWidth; },
+      roomHeight: function() { return roomHeight; }
+    };
+
+    return exports;
+  }
+
+
+  function generate() {
+    var n = Node(1, 1, map.properties.width, map.properties.height).subdivide();
+
+    map.properties.enableDrawing = false;
+
+
+    n.generate(); 
+    n.fillRooms();
+    n.createWalls();
+  }
+
+  return {
+    generate: generate
+  }
+
+};
