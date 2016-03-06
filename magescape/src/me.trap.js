@@ -41,4 +41,27 @@ me.Trap = function (attributes, map, owner) {
   function processTurn() {
     var a = map.actors.collision(properties.pos.x, properties.pos.y);
     properties.duration--;
-    if (properties.duration 
+    if (properties.duration <= 0) {
+      events.emit('Kill');
+      return false;
+    }
+
+    events.emit('Turn');
+
+    if (a !== false && a !== owner) {
+      a.kill();
+      events.emit('Kill');
+      return;
+    }
+
+
+    return true;
+  }
+
+  return {
+    on: events.on,
+    properties: properties,
+    processTurn: processTurn,
+    pos: function() { return properties.pos; }
+  }
+};
