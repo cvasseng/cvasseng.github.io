@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIDI Stem Splitter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0908;
+    --ink: #f4f1ea;
+    --ink-dim: #a8a298;
+    --accent: #ff5b1f;
+    --accent-dim: #6b2a13;
+    --panel: #15130f;
+    --line: #2a2620;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,91,31,0.08), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255,91,31,0.05), transparent 60%);
+  }
+  .grain {
+    pointer-events: none;
+    position: fixed; inset: 0;
+    opacity: 0.05;
+    z-index: 100;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  header {
+    padding: 3rem 4rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+  .brand .dot { color: var(--accent); }
+  .meta {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+  }
+  main {
+    padding: 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 2rem;
+  }
+  h1 em {
+    font-style: italic;
+    font-weight: 900;
+    color: var(--accent);
+  }
+  .lede {
+    font-size: 1rem;
+    color: var(--ink-dim);
+    max-width: 50ch;
+    margin-bottom: 4rem;
+    line-height: 1.6;
+  }
+  .drop {
+    display: block;
+    border: 4px dashed var(--accent);
+    background: var(--panel);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: background 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    outline: none;
+  }
+  .drop:hover, .drop.over {
+    background: #1a160f;
+  }
+  .drop:focus, .drop:focus-visible { outline: none; }
+  .drop-icon {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 2.5rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+  .drop-text {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+  }
+  .drop-text strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  #fileInput { display: none; }
+  .tracks {
+    margin-top: 2rem;
+    display: none;
+  }
+  .tracks.active { display: block; }
+  .track {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+    gap: 1.5rem;
+    transition: background 0.2s;
+  }
+  .track-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .track-play {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .track-play[hidden] { display: none; }
+  .track-play:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .track-play.playing {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .track:hover { background: var(--panel); }
+  .track-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--accent-dim);
+  }
+  .track-name {
+    font-size: 0.95rem;
+  }
+  .track-meta {
+    font-size: 0.75rem;
+    color: var(--ink-dim);
+    margin-top: 0.2rem;
+  }
+  .track-progress {
+    width: 200px;
+    height: 2px;
+    background: var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .track-progress-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s;
+  }
+  .track.done .track-progress-fill { width: 100% !important; }
+  .track.done .track-num { color: var(--accent); }
+  footer {
+    padding: 2rem 4rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    display: flex;
+    justify-content: space-between;
+  }
+  .err {
+    color: #ff7a52;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header>
+  <div class="brand">stems<span class="dot">.</span></div>
+</header>
+
+<main>
+  <h1>Drop a MIDI.<br/>Get <em>stems</em>.</h1>
+  <p class="lede">Drag any .mid file onto the panel below. Each track renders to its own MP3, packaged in a zip. Nothing uploaded — everything runs locally in your browser.</p>
+
+  <label for="fileInput" class="drop" id="drop">
+    <div class="drop-icon">+</div>
+    <div class="drop-text"><strong>Drop file</strong> or click to choose</div>
+    <input type="file" id="fileInput" accept=".mid,.midi" />
+  </label>
+
+  <div class="tracks" id="tracks"></div>
+
+  <div class="err" id="err"></div>
+</main>
+
+<footer>
+  <span>no upload · no account · no nonsense</span>
+  <span>v0.1</span>
+</footer>
+
+<!-- Surface load/runtime errors in the UI -->
+<script>
+  function _showBootErr(msg) {
+    var el = document.getElementById('err');
+    if (el) el.textContent = '⚠ ' + msg;
+  }
+  window.addEventListener('error', e => {
+    _showBootErr((e.message || 'Script error') + (e.filename ? ' — ' + e.filename : ''));
+  });
+  window.addEventListener('unhandledrejection', e => {
+    _showBootErr('Unhandled: ' + (e.reason && (e.reason.message || e.reason)));
+  });
+</script>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28/build/Midi.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script type="module">
+console.log('[stems] module loading…');
+import { Synthetizer, Sequencer } from 'https://esm.sh/spessasynth_lib@3.27.7?deps=spessasynth_core@3.26.37';
+console.log('[stems] spessasynth imported');
+
+const SOUNDFONT_URL = 'https://cdn.jsdelivr.net/gh/spessasus/SpessaSynth@master/soundfonts/GeneralUserGS.sf3';
+
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('fileInput');
+const tracksEl = document.getElementById('tracks');
+const errEl = document.getElementById('err');
+
+let soundfontBuffer = null;
+
+function setStatus(msg) {
+  console.log('[stems]', msg);
+}
+function showErr(e) {
+  console.error(e);
+  errEl.textContent = '⚠ ' + (e.message || e);
+}
+
+['dragenter', 'dragover'].forEach(ev =>
+  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); })
+);
+['dragleave', 'drop'].forEach(ev =>
+  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); })
+);
+drop.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+fileInput.addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (f) handleFile(f);
+});
+
+console.log('[stems] ready');
+
+async function loadSoundfont() {
+  if (soundfontBuffer) return soundfontBuffer;
+  setStatus('Loading soundfont…');
+  const resp = await fetch(SOUNDFONT_URL);
+  if (!resp.ok) throw new Error(`Soundfont fetch failed (HTTP ${resp.status})`);
+  const total = Number(resp.headers.get('content-length')) || 0;
+  if (!resp.body || !total) {
+    soundfontBuffer = await resp.arrayBuffer();
+    return soundfontBuffer;
+  }
+  const reader = resp.body.getReader();
+  const chunks = [];
+  let received = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    setStatus(`Loading soundfont… ${(received / 1048576).toFixed(1)} / ${(total / 1048576).toFixed(1)} MB`);
+  }
+  const merged = new Uint8Array(received);
+  let offset = 0;
+  for (const c of chunks) { merged.set(c, offset); offset += c.length; }
+  soundfontBuffer = merged.buffer;
+  return soundfontBuffer;
+}
+
+// Encode AudioBuffer (mono or stereo) to MP3 via lamejs
+function encodeMP3(audioBuffer, bitrate = 128) {
+  const channels = Math.min(audioBuffer.numberOfChannels, 2);
+  const sampleRate = audioBuffer.sampleRate;
+  const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, bitrate);
+  const samplesL = audioBuffer.getChannelData(0);
+  const samplesR = channels === 2 ? audioBuffer.getChannelData(1) : null;
+  // Convert Float32 -> Int16
+  const toInt16 = (f32) => {
+    const out = new Int16Array(f32.length);
+    for (let i = 0; i < f32.length; i++) {
+      let s = Math.max(-1, Math.min(1, f32[i]));
+      out[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    }
+    return out;
+  };
+  const left = toInt16(samplesL);
+  const right = samplesR ? toInt16(samplesR) : null;
+  const blockSize = 1152;
+  const mp3Data = [];
+  for (let i = 0; i < left.length; i += blockSize) {
+    const l = left.subarray(i, i + blockSize);
+    const r = right ? right.subarray(i, i + blockSize) : null;
+    const buf = channels === 2 ? mp3encoder.encodeBuffer(l, r) : mp3encoder.encodeBuffer(l);
+    if (buf.length > 0) mp3Data.push(buf);
+  }
+  const flush = mp3encoder.flush();
+  if (flush.length > 0) mp3Data.push(flush);
+  return new Blob(mp3Data, { type: 'audio/mp3' });
+}
+
+// Build a single-track MIDI file from one track of the parsed source
+function buildSingleTrackMidi(srcMidi, trackIndex) {
+  const Midi = window['@tonejs/midi'] ? window['@tonejs/midi'].Midi : window.Midi;
+  // Reconstruct via @tonejs/midi: clone header, keep one track
+  const out = new Midi();
+  out.header = srcMidi.header;
+  // re-encode after stripping other tracks
+  const track = srcMidi.tracks[trackIndex];
+  const newTrack = out.addTrack();
+  newTrack.channel = track.channel;
+  newTrack.instrument.number = track.instrument.number;
+  newTrack.name = track.name;
+  track.notes.forEach(n => newTrack.addNote({
+    midi: n.midi, time: n.time, duration: n.duration, velocity: n.velocity
+  }));
+  track.controlChanges && Object.values(track.controlChanges).flat().forEach(cc =>
+    newTrack.addCC({ number: cc.number, value: cc.value, time: cc.time })
+  );
+  if (track.pitchBends) {
+    track.pitchBends.forEach(pb => newTrack.addPitchBend ? newTrack.addPitchBend({ value: pb.value, time: pb.time }) : null);
+  }
+  return out.toArray();
+}
+
+async function renderTrackToBuffer(midiArrayBuffer, durationSec, onProgress, sampleRate = 44100) {
+  const totalSamples = Math.ceil((durationSec + 2) * sampleRate);
+  const ctx = new OfflineAudioContext(2, totalSamples, sampleRate);
+  await ctx.audioWorklet.addModule('https://cdn.jsdelivr.net/npm/spessasynth_lib@3.27.7/synthetizer/worklet_processor.min.js');
+  const synth = new Synthetizer(ctx.destination, soundfontBuffer);
+  await synth.isReady;
+  const seq = new Sequencer([{ binary: midiArrayBuffer }], synth);
+  seq.play();
+
+  // Poll currentTime to update progress while rendering
+  let cancelled = false;
+  const renderPromise = ctx.startRendering();
+  (function tick() {
+    if (cancelled) return;
+    if (onProgress) onProgress(Math.min(1, ctx.currentTime / (durationSec + 2)));
+    setTimeout(tick, 100);
+  })();
+  const rendered = await renderPromise;
+  cancelled = true;
+  if (onProgress) onProgress(1);
+  return rendered;
+}
+
+async function handleFile(file) {
+  errEl.textContent = '';
+  tracksEl.innerHTML = '';
+  tracksEl.classList.remove('active');
+  try {
+    setStatus(`Parsing ${file.name}…`);
+    const buf = await file.arrayBuffer();
+    const Midi = window['@tonejs/midi'] ? window['@tonejs/midi'].Midi : window.Midi;
+    const midi = new Midi(buf);
+    const tracksWithNotes = midi.tracks
+      .map((t, i) => ({ track: t, originalIndex: i }))
+      .filter(({ track }) => track.notes && track.notes.length > 0);
+
+    if (tracksWithNotes.length === 0) throw new Error('No playable tracks found in MIDI.');
+
+    setStatus(`Found ${tracksWithNotes.length} tracks. Loading soundfont…`);
+    await loadSoundfont();
+
+    const duration = midi.duration;
+    tracksEl.classList.add('active');
+    tracksWithNotes.forEach(({ track, originalIndex }, displayIdx) => {
+      const row = document.createElement('div');
+      row.className = 'track';
+      row.id = `track-${originalIndex}`;
+      row.innerHTML = `
+        <div class="track-num">${String(displayIdx + 1).padStart(2, '0')}</div>
+        <div>
+          <div class="track-name">${escapeHtml(track.name || `Track ${originalIndex + 1}`)}</div>
+          <div class="track-meta">${track.notes.length} notes · ch ${track.channel} · prog ${track.instrument.number}</div>
+        </div>
+        <div class="track-right">
+          <div class="track-progress"><div class="track-progress-fill"></div></div>
+          <button class="track-play" hidden aria-label="Play preview">▶</button>
+        </div>
+      `;
+      tracksEl.appendChild(row);
+    });
+
+    const zip = new JSZip();
+    const baseName = file.name.replace(/\.midi?$/i, '');
+
+    // Render N tracks at a time. Each OfflineAudioContext is independent;
+    // browsers will schedule them across threads / cores where possible.
+    // Higher = faster but more memory (each ctx holds duration*sr*8 bytes).
+    const CONCURRENCY = Math.min(3, tracksWithNotes.length);
+    let completed = 0;
+    let nextIdx = 0;
+    const total = tracksWithNotes.length;
+
+    async function processTrack(i) {
+      const { track, originalIndex } = tracksWithNotes[i];
+      const row = document.getElementById(`track-${originalIndex}`);
+      const fill = row.querySelector('.track-progress-fill');
+      fill.style.width = '5%';
+
+      const singleMidi = buildSingleTrackMidi(midi, originalIndex);
+      const audioBuf = await renderTrackToBuffer(singleMidi.buffer, duration, p => {
+        fill.style.width = (5 + p * 75) + '%';
+      });
+      fill.style.width = '85%';
+
+      const mp3Blob = encodeMP3(audioBuf, 128);
+
+      const rawName = (track.name || `untitled`).replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'untitled';
+      const fileName = `${rawName}_track${i + 1}.mp3`;
+      zip.file(fileName, mp3Blob);
+
+      // Bring the bar to 100% and wait for the CSS transition to finish
+      // before revealing the play button, so they don't appear out of sync.
+      fill.style.width = '100%';
+      await new Promise(resolve => {
+        let settled = false;
+        const done = () => { if (settled) return; settled = true; fill.removeEventListener('transitionend', done); resolve(); };
+        fill.addEventListener('transitionend', done);
+        setTimeout(done, 400);
+      });
+      row.classList.add('done');
+      attachPlayer(row, mp3Blob);
+      completed++;
+      setStatus(`Rendered ${completed}/${total} tracks…`);
+    }
+
+    async function worker() {
+      while (true) {
+        const i = nextIdx++;
+        if (i >= total) return;
+        await processTrack(i);
+      }
+    }
+
+    setStatus(`Rendering ${total} tracks in parallel (×${CONCURRENCY})…`);
+    await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+
+    setStatus('Packaging zip…');
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${baseName}_stems.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatus(`Done. ${tracksWithNotes.length} stems exported.`);
+  } catch (e) {
+    showErr(e);
+    setStatus('Failed.');
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Single shared audio element — playing one stem stops any other
+let activeAudio = null;
+let activeBtn = null;
+function stopActive() {
+  if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; }
+  if (activeBtn) { activeBtn.textContent = '▶'; activeBtn.classList.remove('playing'); }
+  activeAudio = null;
+  activeBtn = null;
+}
+function attachPlayer(row, mp3Blob) {
+  const btn = row.querySelector('.track-play');
+  if (!btn) return;
+  const url = URL.createObjectURL(mp3Blob);
+  btn.hidden = false;
+  btn.addEventListener('click', () => {
+    if (activeBtn === btn) { stopActive(); return; }
+    stopActive();
+    const audio = new Audio(url);
+    audio.addEventListener('ended', () => { if (activeBtn === btn) stopActive(); });
+    activeAudio = audio;
+    activeBtn = btn;
+    btn.textContent = '■';
+    btn.classList.add('playing');
+    audio.play().catch(e => { console.error(e); stopActive(); });
+  });
+}
+</script>
+</body>
+</html>
