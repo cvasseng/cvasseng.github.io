@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Morsom Reference</title>
+<meta name="description" content="Every Morse character, with its code. Click or press a key to hear it.">
+<meta name="theme-color" content="#14181d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="topbar">
+<h1 class="wordmark">
+<span class="flourish" aria-hidden="true">
+<i class="rule"></i><i class="dit"></i><i class="dah"></i>
+</span>
+<span class="wordmark-text">
+<b>Morsom</b><span class="thin">Reference</span>
+</span>
+<span class="flourish rev" aria-hidden="true">
+<i class="dah"></i><i class="dit"></i><i class="rule"></i>
+</span>
+</h1>
+<nav class="subnav">
+<a href="index.html">← Back to the trainer</a>
+</nav>
+</header>
+<main>
+<p class="mode-blurb">
+Every character in the table. Click one, or just press the key, to hear it.
+Nothing here is scored.
+</p>
+<p id="ref-settings" class="ref-settings"></p>
+<div id="ref-groups"></div>
+</main>
+<footer class="credits">
+<p class="credits-more">
+Codes follow the ITU-R M.1677-1 international Morse alphabet.
+<a href="index.html">Back to the trainer</a>
+</p>
+</footer>
+<script type="module" src="js/reference.js"></script>
+</body>
+</html>

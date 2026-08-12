@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Morsom CW Trainer</title>
+<meta name="description" content="A Morse receiving trainer with Farnsworth timing, progressive character introduction and honest accuracy statistics.">
+<meta name="theme-color" content="#14181d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="topbar">
+<h1 class="wordmark">
+<span class="flourish" aria-hidden="true">
+<i class="rule"></i><i class="dit"></i><i class="dah"></i>
+</span>
+<span class="wordmark-text">
+<b>Morsom</b><span class="thin">CW Trainer</span>
+</span>
+<span class="flourish rev" aria-hidden="true">
+<i class="dah"></i><i class="dit"></i><i class="rule"></i>
+</span>
+</h1>
+<nav id="modes" class="modes" role="tablist" aria-label="Drill mode"></nav>
+</header>
+<main>
+<section class="panel">
+<p id="mode-blurb" class="mode-blurb" aria-live="polite"></p>
+<div id="charset" class="charset" aria-label="Active characters"></div>
+<p id="pool-hidden" class="pool-hidden" hidden></p>
+<div class="charset-actions">
+<span id="charset-edit">
+<button type="button" id="remove-char" class="small" title="Remove the newest character">− character</button>
+<button type="button" id="add-char" class="small" title="Unlock the next character manually">+ character</button>
+</span>
+<button
+type="button"
+id="hide-pool"
+class="switch"
+role="switch"
+aria-checked="true"
+title="Copy by sound, without the list to pick from">
+<span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+<span class="switch-label">Hide while drilling</span>
+</button>
+</div>
+<div id="group-controls" class="group-controls" hidden>
+<label for="groupMin">Group length</label>
+<select id="groupMin" aria-label="Shortest group"></select>
+<span class="to">to</span>
+<select id="groupMax" aria-label="Longest group"></select>
+<span class="unit">characters</span>
+</div>
+<div id="notices" class="notices" aria-live="polite"></div>
+<div id="stage" class="stage">
+<div id="feedback" class="feedback" aria-live="polite"></div>
+<input
+id="answer"
+type="text"
+inputmode="text"
+autocapitalize="characters"
+autocorrect="off"
+autocomplete="off"
+spellcheck="false"
+enterkeyhint="done"
+aria-label="What you copied"
+placeholder="press Start">
+<p class="hint">
+<kbd>Enter</kbd> submit · <kbd>Space</kbd> replay · <kbd>Esc</kbd> end
+</p>
+</div>
+<div class="statusbar">
+<span id="dots" class="dots" aria-hidden="true"></span>
+<span id="status" class="status"></span>
+<button type="button" id="startstop" class="primary">Start</button>
+</div>
+</section>
+<section id="summary" class="panel summary" hidden></section>
+<details class="panel" id="settings">
+<summary><span>Settings</span></summary>
+<form id="settings-form" autocomplete="off">
+<div class="field">
+<label for="charSpeed">Character speed <output>20</output> wpm</label>
+<input type="range" id="charSpeed" name="charSpeed" min="10" max="40" step="1" value="20">
+</div>
+<div class="field">
+<label for="effSpeed">Effective speed <output>10</output> wpm</label>
+<input type="range" id="effSpeed" name="effSpeed" min="5" max="40" step="1" value="10">
+<p class="note">Farnsworth: characters stay fast, the gaps stretch. Clamped to the character speed.</p>
+</div>
+<div class="field">
+<label for="tone">Tone <output>600</output> Hz</label>
+<input type="range" id="tone" name="tone" min="400" max="1000" step="10" value="600">
+</div>
+<div class="field">
+<label for="rise">Envelope rise/fall <output>5</output> ms</label>
+<input type="range" id="rise" name="rise" min="2" max="10" step="1" value="5">
+</div>
+<div class="field">
+<label for="volume">Volume <output>0.5</output></label>
+<input type="range" id="volume" name="volume" min="0" max="1" step="0.05" value="0.5">
+</div>
+<div class="field">
+<label for="order">Learning order</label>
+<select id="order" name="order"></select>
+<p class="note">Progress is stored per order, so switching back loses nothing.</p>
+</div>
+<fieldset class="field">
+<legend>Session length</legend>
+<label class="check"><input type="radio" name="limitType" value="duration" checked><span>By time</span></label>
+<label class="check"><input type="radio" name="limitType" value="items"><span>By item count</span></label>
+<div class="field" data-limit="duration">
+<label for="sessionMinutes">Minutes <output>5</output></label>
+<input type="range" id="sessionMinutes" name="sessionMinutes" min="1" max="30" step="1" value="5">
+</div>
+<div class="field" data-limit="items" hidden>
+<label for="sessionItems">Items <output>50</output></label>
+<input type="range" id="sessionItems" name="sessionItems" min="5" max="200" step="5" value="50">
+</div>
+</fieldset>
+<fieldset class="field">
+<legend>Phrase groups</legend>
+<div id="phrase-subsets" class="checks"></div>
+</fieldset>
+</form>
+<div class="field">
+<h3>Your data</h3>
+<p class="note">Everything is stored in this browser only. Export before clearing browser data.</p>
+<div class="row">
+<button type="button" id="export" class="small">Export JSON</button>
+<button type="button" id="import" class="small">Import JSON</button>
+<button type="button" id="reset" class="small danger">Reset all</button>
+</div>
+<input type="file" id="import-file" accept="application/json,.json" hidden>
+</div>
+</details>
+<details class="panel" id="stats">
+<summary><span>Stats</span></summary>
+<div id="gap" class="gap-wrap"></div>
+<div id="stats-body" class="stats-body"></div>
+</details>
+</main>
+<footer class="credits">
+<p class="credits-lead">
+Everything you drill stays in this browser. Nothing is uploaded, and there is
+no account, so <a href="#settings">export your progress</a> before clearing
+site data.
+</p>
+<p class="credit">
+<span class="credit-label">Learning orders</span>
+<b>Koch</b>: the classic SuperMorse ordering.
+<b>LCWO</b>: transcribed from
+<a href="https://git.fkurz.net/dj1yfk/lcwo" target="_blank" rel="noopener noreferrer">its own source</a>
+by Fabian Kurz, DJ5CW (AGPL-3).
+<b>CW Academy</b>: from the
+<a href="https://cwops.org/" target="_blank" rel="noopener noreferrer">CWops</a>
+Beginner curriculum.
+</p>
+<p class="credit">
+<span class="credit-label">Word list</span>
+Derived from the OpenSubtitles 2018 frequency list in
+<a href="https://github.com/hermitdave/FrequencyWords" target="_blank" rel="noopener noreferrer">hermitdave/FrequencyWords</a>,
+used under
+<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.
+</p>
+<p class="credit">
+<span class="credit-label">Timing</span>
+Farnsworth spacing follows the ARRL formula; character and effective speed are
+independent.
+</p>
+<p class="credits-more">
+<a href="reference.html">Character reference</a> ·
+Full provenance, licences and how to regenerate the word list:
+<a href="data/SOURCES.md">data/SOURCES.md</a>
+</p>
+</footer>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

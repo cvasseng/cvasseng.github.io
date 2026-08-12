@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="CW Trainer">
+  <rect width="512" height="512" rx="96" fill="#14181d"/>
+  <g fill="#4c9ffe">
+    <!-- dit dah: the smallest thing that reads as morse at any size -->
+    <circle cx="150" cy="256" r="46"/>
+    <rect x="228" y="210" width="180" height="92" rx="46"/>
+  </g>
+</svg>
