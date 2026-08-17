@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Morsom CW Trainer</title>
 <meta name="description" content="A Morse receiving trainer with Farnsworth timing, progressive character introduction and honest accuracy statistics.">
-<meta name="theme-color" content="#14181d">
+<meta name="theme-color" content="#121110">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -14,25 +14,31 @@
 <body>
 <header class="topbar">
 <h1 class="wordmark">
-<span class="flourish" aria-hidden="true">
-<i class="rule"></i><i class="dit"></i><i class="dah"></i>
-</span>
 <span class="wordmark-text">
 <b>Morsom</b><span class="thin">CW Trainer</span>
 </span>
-<span class="flourish rev" aria-hidden="true">
-<i class="dah"></i><i class="dit"></i><i class="rule"></i>
-</span>
+<span class="flourish" aria-hidden="true"
+><i class="dah"></i><i class="dah"></i><i class="rule"></i
+><i class="dah"></i><i class="dah"></i><i class="dah"></i><i class="rule"></i
+><i class="dit"></i><i class="dah"></i><i class="dit"></i><i class="rule"></i
+><i class="dit"></i><i class="dit"></i><i class="dit"></i><i class="rule"></i
+><i class="dah"></i><i class="dah"></i><i class="dah"></i><i class="rule"></i
+><i class="dah"></i><i class="dah"></i
+></span>
 </h1>
-<section id="streak" class="streak" aria-label="Practice streak"></section>
 <nav id="views" class="views" role="tablist" aria-label="Section"></nav>
 </header>
 <main>
 <section id="view-copy" class="view" data-view="copy">
-<nav id="modes" class="modes" role="tablist" aria-label="Drill mode"></nav>
-<section class="panel">
+<section class="panel drill">
+<div id="modes" class="modes" role="radiogroup" aria-label="Drill mode"></div>
+<p class="session">
+<span id="session-summary" class="session-summary"></span>
+<button type="button" id="setup-open" class="session-change"
+aria-haspopup="dialog">Change</button>
+</p>
 <p id="mode-blurb" class="mode-blurb" aria-live="polite"></p>
-<div id="charset" class="charset" aria-label="Active characters"></div>
+<div id="charset" class="charset" aria-label="Active characters, click one to hear it"></div>
 <p id="pool-hidden" class="pool-hidden" hidden></p>
 <div id="notices" class="notices" aria-live="polite"></div>
 <div id="stage" class="stage">
@@ -54,16 +60,35 @@ placeholder="press Start">
 </p>
 </div>
 <div class="statusbar">
-<div id="setup" class="setup setup-inline">
+<span id="status" class="status"></span>
+<button type="button" id="startstop" class="primary">Start</button>
+</div>
+</section>
+<section id="summary" class="panel summary" hidden></section>
+<dialog id="setup-dialog" class="sheet" aria-labelledby="setup-title">
+<div class="sheet-head">
+<h2 id="setup-title">Drill setup</h2>
+<button type="button" id="setup-close" class="small">Done</button>
+</div>
+<div id="setup" class="setup">
+<div id="speed-controls" class="dial">
+<label class="dial-label" for="drillCharSpeed">Speed</label>
+<span class="dial-control">
+<select id="drillCharSpeed" aria-label="Character speed in words per minute"></select>
+<span class="to" aria-hidden="true">/</span>
+<select id="drillEffSpeed" aria-label="Effective speed in words per minute"></select>
+<span class="unit">wpm</span>
+</span>
+</div>
 <div id="conditions" class="dial" role="radiogroup" aria-label="Band conditions">
-<span class="dial-label">Conditions</span>
+<span class="dial-label">Band</span>
 <span class="dial-control">
 <span id="condition-levels" class="levels"></span>
 <output id="condition-name" class="dial-value">Clean</output>
 </span>
 </div>
 <div id="flow-controls" class="dial" data-modes="flow" hidden>
-<label class="dial-label" for="flowMin">Words per line</label>
+<label class="dial-label" for="flowMin">Words a line</label>
 <span class="dial-control">
 <select id="flowMin" aria-label="Fewest words"></select>
 <span class="to">to</span>
@@ -80,30 +105,16 @@ placeholder="press Start">
 </span>
 </div>
 </div>
-<button type="button" id="setup-open" class="icon-button" aria-haspopup="dialog" hidden>
-<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-<path d="M2 6h9M15 6h3M2 14h3M9 14h9" />
-<circle cx="13" cy="6" r="2.2" />
-<circle cx="7" cy="14" r="2.2" />
-</svg>
-<span class="sr-only">Drill setup</span>
-</button>
-<span id="status" class="status"></span>
-<button type="button" id="startstop" class="primary">Start</button>
-</div>
-</section>
-<section id="summary" class="panel summary" hidden></section>
-<dialog id="setup-dialog" class="sheet" aria-label="Drill setup">
-<div class="sheet-head">
-<h2>Drill setup</h2>
-<button type="button" id="setup-close" class="small">Done</button>
-</div>
-<div id="setup-slot"></div>
 </dialog>
 </section>
 <section id="view-send" class="view" data-view="send" hidden>
-<nav id="send-modes" class="modes" role="tablist" aria-label="Sending drill"></nav>
-<section class="panel">
+<section class="panel drill">
+<div id="send-modes" class="modes" role="radiogroup" aria-label="Sending drill"></div>
+<p class="session">
+<span id="send-session-summary" class="session-summary"></span>
+<button type="button" id="send-setup-open" class="session-change"
+aria-haspopup="dialog">Change</button>
+</p>
 <p id="send-blurb" class="mode-blurb" aria-live="polite"></p>
 <div id="send-notices" class="notices" aria-live="polite"></div>
 <div id="send-stage" class="stage send-stage">
@@ -119,6 +130,17 @@ placeholder="press Start">
 <p id="send-hint" class="hint"></p>
 </div>
 <div class="statusbar">
+<span id="send-status" class="status"></span>
+<button type="button" id="send-startstop" class="primary">Start</button>
+</div>
+</section>
+<section id="send-summary" class="panel summary" hidden></section>
+<dialog id="send-setup-dialog" class="sheet" aria-labelledby="send-setup-title">
+<div class="sheet-head">
+<h2 id="send-setup-title">Sending setup</h2>
+<button type="button" id="send-setup-close" class="small">Done</button>
+</div>
+<div class="setup">
 <div class="dial send-dial">
 <label class="dial-label" for="sendSpeed">Keying speed</label>
 <span class="dial-control">
@@ -127,17 +149,19 @@ aria-describedby="sendSpeed-value">
 <output id="sendSpeed-value" class="dial-value">15 wpm</output>
 </span>
 </div>
-<button type="button" id="send-sidetone" class="switch sidetone-switch"
+<div class="dial">
+<span class="dial-label">Sidetone</span>
+<span class="dial-control">
+<button type="button" id="send-sidetone" class="switch"
 role="switch" aria-checked="true">
 <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
-<span class="switch-label">Sound</span>
+<span class="switch-label">Sound your key back</span>
 </button>
-<span id="send-status" class="status"></span>
-<button type="button" id="send-startstop" class="primary">Start</button>
+</span>
 </div>
-</section>
-<section id="send-summary" class="panel summary" hidden></section>
-<details class="panel send-plan">
+</div>
+</dialog>
+<details class="group send-plan">
 <summary>How sending works</summary>
 <dl class="plan-list">
 <dt>Reading the key</dt>
@@ -164,7 +188,8 @@ receiving figure, and sending never unlocks a character.</dd>
 <h3 class="plan-heading">What it deliberately does not do</h3>
 <dl class="plan-list">
 <dt>Pretend the tone is not late</dt>
-<dd>The sidetone toggle sits beside the keying speed and is on by default. A
+<dd>The sidetone toggle sits beside the keying speed in Sending setup, and is
+on by default. A
 browser is late by its audio output buffer plus whatever the operating system
 adds, so if your key or adapter makes its own tone, turn this off and use
 that one: it will be tighter than anything a browser can do.</dd>
@@ -176,14 +201,14 @@ which clamps timers to 1 ms: ample, since a dit at 20 wpm is 60 ms.</dd>
 </details>
 </section>
 <section id="view-stats" class="view" data-view="stats" hidden>
-<section class="panel">
+<section class="group">
 <div id="gap" class="gap-wrap"></div>
 <div id="stats-body" class="stats-body"></div>
 </section>
 </section>
 <section id="view-settings" class="view" data-view="settings" hidden>
 <form id="settings-form" autocomplete="off">
-<section class="panel">
+<section class="group">
 <h2>Speed</h2>
 <div class="field">
 <label for="charSpeed">Character speed <output>20</output> wpm</label>
@@ -193,16 +218,19 @@ which clamps timers to 1 ms: ample, since a dit at 20 wpm is 60 ms.</dd>
 <label for="effSpeed">Effective speed <output>10</output> wpm</label>
 <input type="range" id="effSpeed" name="effSpeed" min="5" max="40" step="1" value="10">
 <p class="note">Farnsworth: characters stay fast, the gaps stretch. Clamped to the character speed.</p>
+<p class="note">The same pair is in Drill setup on the Copy screen, so
+easing the gap and going again does not cross a screen. These sliders and
+that dial are one setting: change either and both follow.</p>
 </div>
 </section>
-<section class="panel">
+<section class="group">
 <h2>Audio</h2>
 <div class="field">
 <label for="tone">Tone <output>600</output> Hz</label>
 <input type="range" id="tone" name="tone" min="400" max="1000" step="10" value="600">
 </div>
 <div class="field">
-<label for="volume">Volume <output>0.5</output></label>
+<label for="volume">Volume <output data-format="percent">50</output>%</label>
 <input type="range" id="volume" name="volume" min="0" max="1" step="0.05" value="0.5">
 </div>
 <div class="field">
@@ -211,13 +239,12 @@ which clamps timers to 1 ms: ample, since a dit at 20 wpm is 60 ms.</dd>
 <p class="note">Hard-gating a sine wave clicks. This softens each edge.</p>
 </div>
 <div class="field">
-<p class="note">Band conditions (noise, fading, a second station) sit with
-the drill on the Copy screen, since they are something you change between
-sessions rather than set once. They are recorded with every attempt, and
+<p class="note">Band conditions (noise, fading, a second station) are in
+Drill setup on the Copy screen. They are recorded with every attempt, and
 speed advice only ever compares like with like.</p>
 </div>
 </section>
-<section class="panel">
+<section class="group">
 <h2>Session</h2>
 <div class="field">
 <button
@@ -235,7 +262,7 @@ from a list rather than recalling the sound, which is the easier task and
 not the one being trained.</p>
 </div>
 <fieldset class="field">
-<legend>Length</legend>
+<legend>Session length</legend>
 <label class="check"><input type="radio" name="limitType" value="duration" checked><span>By time</span></label>
 <label class="check"><input type="radio" name="limitType" value="items"><span>By item count</span></label>
 <div class="field" data-limit="duration">
@@ -248,7 +275,7 @@ not the one being trained.</p>
 </div>
 </fieldset>
 </section>
-<section class="panel">
+<section class="group">
 <h2>Progression</h2>
 <div class="field">
 <label for="order">Learning order</label>
@@ -267,11 +294,11 @@ are the manual override, so a stuck character never traps you.</p>
 <div class="field">
 <label for="weakThreshold">Weak below <output>85</output>% accuracy</label>
 <input type="range" id="weakThreshold" name="weakThreshold" min="50" max="95" step="5" value="85">
-<p class="note">What the Weak tab drills. Characters under this are sent
+<p class="note">What the Weak mode drills. Characters under this are sent
 four times as often as the ones you confuse them with.</p>
 </div>
 </section>
-<section class="panel">
+<section class="group">
 <h2>Sending</h2>
 <div class="field">
 <label for="keyType">Key type</label>
@@ -280,18 +307,18 @@ four times as often as the ones you confuse them with.</p>
 <option value="iambic-a">Iambic paddle, mode A</option>
 <option value="iambic-b">Iambic paddle, mode B</option>
 </select>
-<p class="note">Set once, for whatever is plugged in, so it lives here
-rather than on the drill row. A straight key is one contact: Space, or an
-adapter's Ctrl. A paddle is two: left Ctrl and right Ctrl, or Z and X if
-you have no hardware yet. The keying speed itself sits with the drill,
-since that is a dial you reach for mid-practice.</p>
+<p class="note">Set once, for whatever is plugged in. A straight key is
+one contact: Space, or an adapter's Ctrl. A paddle is two: left Ctrl and
+right Ctrl, or Z and X if you have no hardware yet. The keying speed
+itself is in Sending setup, since that is a dial you reach for
+mid-practice.</p>
 <p class="note">Modes A and B differ in exactly one rule. Release a squeeze
 during an element and mode B sends one more, completing the alternation;
 mode A stops at the element it was sending. Whichever you learned on will
 feel like the right one.</p>
 </div>
 </section>
-<section class="panel">
+<section class="group">
 <h2>Content</h2>
 <fieldset class="field">
 <legend>Phrase groups</legend>
@@ -299,7 +326,7 @@ feel like the right one.</p>
 </fieldset>
 </section>
 </form>
-<section class="panel">
+<section class="group">
 <h2>Your data</h2>
 <p class="note">Everything is stored in this browser only. Export before clearing browser data.</p>
 <div class="row">
@@ -310,13 +337,27 @@ feel like the right one.</p>
 <input type="file" id="import-file" accept="application/json,.json" hidden>
 </section>
 </section>
-</main>
-<footer class="credits">
-<p class="credits-lead">
-Everything you drill stays in this browser. Nothing is uploaded, and there is
-no account, so <a href="#settings">export your progress</a> before clearing
-site data.
+<section id="view-about" class="view" data-view="about" hidden>
+<section class="group">
+<h2>What this is</h2>
+<p class="about-lead">
+A Morse trainer for both halves of the skill: copying what you hear, and
+keying it back. One drill engine, seven kinds of content, and statistics
+that try hard not to flatter you.
 </p>
+<p class="note">
+It runs entirely in this browser. There is no account, no server and
+nothing is uploaded, which also means
+<a href="#settings">exporting your progress</a> is the only backup that
+exists. Clearing site data deletes all of it.
+</p>
+<p class="note">
+<a href="reference.html">The character reference</a> has the whole table,
+with every character audible.
+</p>
+</section>
+<section class="group">
+<h2>Credits</h2>
 <p class="credit">
 <span class="credit-label">Learning orders</span>
 <b>Koch</b>: the classic SuperMorse ordering.
@@ -336,15 +377,18 @@ used under
 </p>
 <p class="credit">
 <span class="credit-label">Timing</span>
-Farnsworth spacing follows the ARRL formula; character and effective speed are
-independent.
+Farnsworth spacing follows the ARRL formula; character and effective
+speed are independent. Codes follow the ITU-R M.1677-1 international
+Morse alphabet.
 </p>
-<p class="credits-more">
-<a href="reference.html">Character reference</a> ·
+<p class="note">
 Full provenance, licences and how to regenerate the word list:
 <a href="data/SOURCES.md">data/SOURCES.md</a>
 </p>
-</footer>
+</section>
+</section>
+</main>
+<section id="streak" class="streak" aria-label="Practice streak"></section>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
